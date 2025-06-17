@@ -110,7 +110,16 @@ if [ -f "$SESSION_FILE" ]; then
         next
     }
     { print }
-    ' "$SESSION_FILE" > "${SESSION_FILE}.tmp" && mv "${SESSION_FILE}.tmp" "$SESSION_FILE"
+    ' "$SESSION_FILE" > "${SESSION_FILE}.tmp"
+    
+    # Check if temporary file was created successfully
+    if [ -f "${SESSION_FILE}.tmp" ]; then
+        mv "${SESSION_FILE}.tmp" "$SESSION_FILE"
+    else
+        echo "❌ Error: Failed to create temporary file for checkpoint"
+        rm -f "${SESSION_FILE}.checkpoint"
+        exit 1
+    fi
     
     # Clean up temporary file
     rm -f "${SESSION_FILE}.checkpoint"
