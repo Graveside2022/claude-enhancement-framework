@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-06-17T22:34:53.771196",
+  "user": "Christian",
+  "total_tests": 9,
+  "passed": 8,
+  "failed": 1,
+  "test_details": [
+    {
+      "test_name": "Script Executability",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.771271"
+    },
+    {
+      "test_name": "Project Handoff Help Command",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.807398"
+    },
+    {
+      "test_name": "Project Handoff Status Command",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.841613"
+    },
+    {
+      "test_name": "Project Handoff Timing Check",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.875849"
+    },
+    {
+      "test_name": "SESSION_CONTINUITY.md Update",
+      "passed": false,
+      "timestamp": "2025-06-17T22:34:53.910587"
+    },
+    {
+      "test_name": "Handoff Trigger Detection",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.935014"
+    },
+    {
+      "test_name": "Archive Session Continuity Dry Run",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.964053"
+    },
+    {
+      "test_name": "Context Usage Monitoring",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.997645"
+    },
+    {
+      "test_name": "Handoff File Creation",
+      "passed": true,
+      "timestamp": "2025-06-17T22:34:53.997846"
+    }
+  ],
+  "success_rate": 88.88888888888889
+}
