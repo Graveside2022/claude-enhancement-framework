@@ -1,0 +1,4 @@
+.aider*
+
+# Claude session cache (optimized project loader)
+.claude_session_state.json

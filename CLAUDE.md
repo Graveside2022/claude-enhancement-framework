@@ -17,7 +17,7 @@
 - **PATTERN LOCK**: Always check patterns/ before writing new code (10s limit)
 - **TESTING LOCK**: Execute complete 7-step testing decision before ANY code
 - **MEMORY LOCK**: Update SESSION_CONTINUITY.md after EVERY action
-- **PARALLEL LOCK**: Investigation = parallel agents, Implementation = sequential
+- **PARALLEL LOCK**: Context-aware agents (boot=3, work=5), Implementation = sequential
 
 **BY PROCESSING THIS FILE, YOU ACKNOWLEDGE PROJECT-SPECIFIC BINDING.**
 
@@ -65,11 +65,18 @@ BEFORE WRITING CODE:
 7. Final validation → All code must run
 ```
 
-## PROJECT-SPECIFIC AGENTS
+## CONTEXT-AWARE PROJECT AGENTS
 
+### Boot Context (3 Agents)
+**Used for**: Project initialization, session continuity, pattern loading
+- Agent 1: SESSION_CONTINUITY.md check and project detection
+- Agent 2: Pattern library loading and validation
+- Agent 3: Configuration verification and status reporting
+
+### Work Context (5+ Agents)
 **Investigation (Parallel):**
 - Component Discovery
-- Style Analysis
+- Style Analysis  
 - Test Environment
 - Type System
 - Utility Functions
@@ -78,6 +85,11 @@ BEFORE WRITING CODE:
 
 **Implementation (Sequential):**
 - Component → Styles → Tests → Types → Utilities → Integration → Docs
+
+### Context Detection for Project
+- **Boot triggers**: "setup", "boot", "startup", project initialization
+- **Work triggers**: "implement", "create", "analyze", "design", "investigate"
+- **Override**: Manual agent count specification takes precedence
 
 ## MEMORY PERSISTENCE RULES
 
