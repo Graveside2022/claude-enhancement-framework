@@ -1,0 +1,20 @@
+# Reports Organization System Requirements
+# Python dependencies for automated file management and organization
+
+# Core file system monitoring
+watchdog==3.0.0
+
+# JSON processing (included with Python standard library)
+# No additional requirements for basic functionality
+
+# Optional dependencies for enhanced features:
+# psutil>=5.9.0          # For system resource monitoring
+# schedule>=1.2.0        # For advanced scheduling features
+# colorama>=0.4.6        # For colored console output
+# rich>=13.0.0           # For rich text and progress displays
+
+# Development and testing dependencies:
+# pytest>=7.0.0          # For unit testing
+# pytest-cov>=4.0.0     # For test coverage
+# black>=23.0.0          # For code formatting
+# flake8>=6.0.0          # For code linting

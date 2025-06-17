@@ -1,0 +1,20 @@
+{
+  "auto_organize_on_backup": true,
+  "auto_organize_on_handoff": true,
+  "preserve_originals": false,
+  "backup_integration": {
+    "monitor_backup_directory": true,
+    "categorize_backup_reports": true,
+    "cleanup_old_backup_logs": true
+  },
+  "handoff_integration": {
+    "auto_archive_handoff_files": true,
+    "preserve_session_continuity": true,
+    "cleanup_old_handoffs": true
+  },
+  "session_integration": {
+    "track_session_files": true,
+    "monitor_todo_updates": true,
+    "preserve_error_learnings": true
+  }
+}

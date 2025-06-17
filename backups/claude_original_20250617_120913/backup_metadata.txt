@@ -1,0 +1,11 @@
+Backup Created: 2025-06-17T10:09:13Z
+User: Christian
+Purpose: Pre-optimization backup before switching to minimal CLAUDE.md
+
+Original File Sizes:
+- Project CLAUDE.md:     3558 lines
+- Global CLAUDE.md:     1980 lines
+
+Files Backed Up:
+- CLAUDE_PROJECT_ORIGINAL.md (project)
+- CLAUDE_GLOBAL_ORIGINAL.md (global)

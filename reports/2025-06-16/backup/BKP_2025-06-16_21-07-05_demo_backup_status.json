@@ -1,0 +1,34 @@
+---
+generated: 2025-06-16T21:07:05.094112
+user: Christian
+backup_type: demonstration
+verification_status: passed
+---
+{
+  "backup_verification": {
+    "timestamp": "2025-06-16T20:45:00Z",
+    "user": "Christian",
+    "status": "verified",
+    "files_backed_up": 25,
+    "total_size": "2.4MB",
+    "integrity_check": "passed",
+    "checksum_verification": "successful"
+  },
+  "backup_details": {
+    "reports_system_files": [
+      "reports_organization_system.py",
+      "reports_integration.py", 
+      "automated_file_management.py"
+    ],
+    "configuration_files": [
+      "automated_management_config.json",
+      "categorization_rules.json",
+      "integration_config.json"
+    ],
+    "documentation_files": [
+      "reports_requirements.txt",
+      "INDEX.md"
+    ]
+  },
+  "next_backup_due": "2025-06-16T21:15:00Z"
+}
