@@ -17,6 +17,72 @@ import platform
 from pathlib import Path
 
 
+def _basic_path_validation(user_path: str, default_path: Path, purpose: str) -> Path:
+    """
+    Basic path validation fallback when PathManager is not available.
+    
+    Args:
+        user_path: User-provided path
+        default_path: Default path to use if validation fails
+        purpose: Purpose of the directory (for messages)
+        
+    Returns:
+        Validated Path object (either user input or safe default)
+    """
+    try:
+        path_obj = Path(user_path).expanduser().resolve()
+        
+        # Check if path exists, create if needed
+        if not path_obj.exists():
+            response = input(f"Directory '{path_obj}' does not exist. Create it? [y/N]: ").strip().lower()
+            if response in ['y', 'yes']:
+                try:
+                    path_obj.mkdir(parents=True, exist_ok=True)
+                    print(f"✅ Created directory: {path_obj}")
+                except Exception as e:
+                    print(f"❌ Cannot create directory '{path_obj}': {e}")
+                    if default_path:
+                        print(f"   Using default instead: {default_path}")
+                        return default_path
+                    else:
+                        return Path.cwd()
+            else:
+                if default_path:
+                    print(f"   Using default instead: {default_path}")
+                    return default_path
+                else:
+                    return Path.cwd()
+        
+        # Check if it's a directory
+        if path_obj.exists() and not path_obj.is_dir():
+            print(f"❌ Path '{path_obj}' exists but is not a directory")
+            if default_path:
+                print(f"   Using default instead: {default_path}")
+                return default_path
+            else:
+                return Path.cwd()
+        
+        # Check write permissions
+        if not os.access(path_obj, os.W_OK):
+            print(f"❌ Directory '{path_obj}' is not writable")
+            if default_path:
+                print(f"   Using default instead: {default_path}")
+                return default_path
+            else:
+                return Path.cwd()
+        
+        print(f"✅ {purpose.capitalize()} directory validated: {path_obj}")
+        return path_obj
+        
+    except Exception as e:
+        print(f"❌ Invalid path '{user_path}': {e}")
+        if default_path:
+            print(f"   Using default instead: {default_path}")
+            return default_path
+        else:
+            return Path.cwd()
+
+
 def check_requirements():
     """Check system requirements."""
     print("🔍 Checking system requirements...")
@@ -37,7 +103,7 @@ def check_requirements():
 
 
 def interactive_setup():
-    """Interactive setup configuration."""
+    """Interactive setup configuration with comprehensive path validation."""
     print("\n🎯 Claude Enhancement Framework Configuration")
     print("=" * 50)
     
@@ -48,6 +114,56 @@ def interactive_setup():
     # Get project information (if in project directory)
     current_dir = Path.cwd()
     project_name = input(f"Project name [{current_dir.name}]: ").strip() or current_dir.name
+    
+    # Initialize PathManager for validation
+    try:
+        from claude_enhancer.core.path_manager import PathManager
+        path_manager = PathManager(username=username, project_name=project_name)
+    except ImportError:
+        print("⚠️  Path validation system not available, using basic validation")
+        path_manager = None
+    
+    # File destination configuration
+    print("\n📁 File Destination Configuration:")
+    
+    # CLAUDE.md file destination prompt with validation
+    claude_md_dest = input(f"Where do you want the project-specific CLAUDE.md file? [{current_dir}]: ").strip()
+    if not claude_md_dest:
+        claude_md_path = current_dir
+        print(f"✅ Using current directory: {claude_md_path}")
+    else:
+        if path_manager:
+            claude_md_path = path_manager.get_safe_directory_path(
+                claude_md_dest, 
+                current_dir, 
+                "project CLAUDE.md"
+            )
+        else:
+            # Fallback to basic validation
+            claude_md_path = _basic_path_validation(claude_md_dest, current_dir, "project CLAUDE.md")
+    
+    # Custom installation directory selection with validation
+    custom_install_dir = input(f"Custom installation directory (optional, default: use standard locations): ").strip()
+    if custom_install_dir:
+        if path_manager:
+            is_valid, errors, validated_path = path_manager.validate_installation_directory(
+                custom_install_dir, 
+                "custom installation"
+            )
+            if is_valid and validated_path:
+                custom_install_path = validated_path
+                print(f"✅ Custom installation directory validated: {custom_install_path}")
+            else:
+                print(f"❌ Custom installation directory validation failed:")
+                for error in errors:
+                    print(f"   - {error}")
+                custom_install_path = None
+                print("   Using standard installation locations instead")
+        else:
+            # Fallback to basic validation
+            custom_install_path = _basic_path_validation(custom_install_dir, None, "custom installation")
+    else:
+        custom_install_path = None
     
     # Deployment options
     print("\n📦 Deployment Options:")
@@ -75,7 +191,9 @@ def interactive_setup():
         "deploy_global": deploy_global,
         "deploy_project": deploy_project,
         "session_lines": int(session_lines),
-        "cache_target": float(cache_target)
+        "cache_target": float(cache_target),
+        "claude_md_path": claude_md_path,
+        "custom_install_path": custom_install_path
     }
 
 
@@ -116,6 +234,17 @@ def setup_framework():
     # Configure performance settings
     enhancer.config.performance.session_continuity_lines = config["session_lines"]
     enhancer.config.performance.cache_hit_target = config["cache_target"]
+    
+    # Display deployment preview and get confirmation
+    print(f"\n🔍 Analyzing deployment requirements...")
+    should_proceed = enhancer.display_deployment_preview(
+        deploy_global=config["deploy_global"],
+        deploy_project=config["deploy_project"]
+    )
+    
+    if not should_proceed:
+        print(f"\n❌ Deployment cancelled by user")
+        return
     
     total_files_created = 0
     total_dirs_created = 0

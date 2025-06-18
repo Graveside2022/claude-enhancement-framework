@@ -11,6 +11,7 @@ Primary interface for:
 """
 
 import time
+import hashlib
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
 from .path_manager import PathManager
@@ -78,15 +79,34 @@ class ClaudeEnhancer:
             
             # Deploy global CLAUDE.md
             global_claude_path = global_dir / "CLAUDE.md"
+            global_template = self._get_global_claude_template()
+            
             if force or not global_claude_path.exists():
-                global_template = self._get_global_claude_template()
-                with open(global_claude_path, 'w', encoding='utf-8') as f:
-                    f.write(global_template)
+                # Show comparison and get user confirmation
+                should_proceed = self.display_file_comparison(
+                    global_template, 
+                    global_claude_path, 
+                    "Global CLAUDE.md configuration"
+                )
                 
-                if global_claude_path.exists():
-                    results["files_created"].append(str(global_claude_path))
+                if should_proceed:
+                    with open(global_claude_path, 'w', encoding='utf-8') as f:
+                        f.write(global_template)
+                    
+                    if global_claude_path.exists():
+                        results["files_created"].append(str(global_claude_path))
+                    else:
+                        results["files_updated"].append(str(global_claude_path))
                 else:
-                    results["files_updated"].append(str(global_claude_path))
+                    print(f"⏭️  Skipped: Global CLAUDE.md (user declined)")
+            else:
+                # File exists and not forced - still show comparison for user visibility
+                comparison = self.compare_file_with_existing(global_template, global_claude_path)
+                if not comparison["content_identical"]:
+                    print(f"\n📋 Note: Global CLAUDE.md exists but differs from framework version")
+                    print(f"   Use --force to overwrite, or manually update if needed")
+                else:
+                    print(f"✅ Global CLAUDE.md is up to date")
             
             # Deploy LEARNED_CORRECTIONS.md
             corrections_path = global_dir / "LEARNED_CORRECTIONS.md"
@@ -151,16 +171,34 @@ class ClaudeEnhancer:
             
             # Deploy project CLAUDE.md
             project_claude_path = target_dir / "CLAUDE.md"
+            project_template = self._get_project_claude_template()
+            project_content = self.path_manager.substitute_template_variables(
+                project_template, 
+                {"PROJECT_PATH": str(target_dir)}
+            )
+            
             if force or not project_claude_path.exists():
-                project_template = self._get_project_claude_template()
-                project_content = self.path_manager.substitute_template_variables(
-                    project_template, 
-                    {"PROJECT_PATH": str(target_dir)}
+                # Show comparison and get user confirmation
+                should_proceed = self.display_file_comparison(
+                    project_content, 
+                    project_claude_path, 
+                    "Project CLAUDE.md configuration"
                 )
                 
-                with open(project_claude_path, 'w', encoding='utf-8') as f:
-                    f.write(project_content)
-                results["files_created"].append(str(project_claude_path))
+                if should_proceed:
+                    with open(project_claude_path, 'w', encoding='utf-8') as f:
+                        f.write(project_content)
+                    results["files_created"].append(str(project_claude_path))
+                else:
+                    print(f"⏭️  Skipped: Project CLAUDE.md (user declined)")
+            else:
+                # File exists and not forced - still show comparison for user visibility
+                comparison = self.compare_file_with_existing(project_content, project_claude_path)
+                if not comparison["content_identical"]:
+                    print(f"\n📋 Note: Project CLAUDE.md exists but differs from framework version")
+                    print(f"   Use --force to overwrite, or manually update if needed")
+                else:
+                    print(f"✅ Project CLAUDE.md is up to date")
             
             # Create directory structure
             for dir_name in ["memory", "patterns", "tests", "scripts"]:
@@ -171,13 +209,31 @@ class ClaudeEnhancer:
             
             # Deploy SESSION_CONTINUITY.md template
             session_path = target_dir / "SESSION_CONTINUITY.md"
+            session_template = self._get_session_continuity_template()
+            session_content = self.path_manager.substitute_template_variables(session_template)
+            
             if force or not session_path.exists():
-                session_template = self._get_session_continuity_template()
-                session_content = self.path_manager.substitute_template_variables(session_template)
+                # Show comparison and get user confirmation
+                should_proceed = self.display_file_comparison(
+                    session_content, 
+                    session_path, 
+                    "SESSION_CONTINUITY.md template"
+                )
                 
-                with open(session_path, 'w', encoding='utf-8') as f:
-                    f.write(session_content)
-                results["files_created"].append(str(session_path))
+                if should_proceed:
+                    with open(session_path, 'w', encoding='utf-8') as f:
+                        f.write(session_content)
+                    results["files_created"].append(str(session_path))
+                else:
+                    print(f"⏭️  Skipped: SESSION_CONTINUITY.md (user declined)")
+            else:
+                # File exists and not forced - check if different
+                comparison = self.compare_file_with_existing(session_content, session_path)
+                if not comparison["content_identical"]:
+                    print(f"\n📋 Note: SESSION_CONTINUITY.md exists with different content")
+                    print(f"   Preserving existing session data - use --force to overwrite")
+                else:
+                    print(f"✅ SESSION_CONTINUITY.md is up to date")
             
             # Deploy memory system files
             memory_dir = target_dir / "memory"
@@ -608,3 +664,309 @@ Generated: {{USER_NAME}} | Claude Enhancement Framework v1.0.0"""
             target_path = Path.cwd()
         
         return self.pattern_deployer.rollback_deployment(target_path, backup_patterns)
+    
+    def preview_deployment_changes(self, deploy_global: bool = True, deploy_project: bool = True, 
+                                 project_path: Optional[Union[str, Path]] = None) -> Dict[str, Any]:
+        """
+        Preview all file changes that would be made during deployment.
+        
+        Args:
+            deploy_global: Whether global deployment is planned
+            deploy_project: Whether project deployment is planned
+            project_path: Target project directory
+            
+        Returns:
+            Preview results dictionary
+        """
+        preview = {
+            "global_changes": [],
+            "project_changes": [],
+            "total_files_affected": 0,
+            "new_files": 0,
+            "modified_files": 0,
+            "identical_files": 0
+        }
+        
+        # Preview global changes
+        if deploy_global:
+            global_dir = self.path_manager.get_global_claude_dir()
+            global_template = self._get_global_claude_template()
+            global_claude_path = global_dir / "CLAUDE.md"
+            
+            comparison = self.compare_file_with_existing(global_template, global_claude_path)
+            preview["global_changes"].append({
+                "file": str(global_claude_path),
+                "comparison": comparison,
+                "action": "create" if not comparison["destination_exists"] else 
+                         ("skip" if comparison["content_identical"] else "update")
+            })
+            
+            if not comparison["destination_exists"]:
+                preview["new_files"] += 1
+            elif not comparison["content_identical"]:
+                preview["modified_files"] += 1
+            else:
+                preview["identical_files"] += 1
+        
+        # Preview project changes
+        if deploy_project:
+            if project_path:
+                target_dir = Path(project_path).resolve()
+            else:
+                target_dir = Path.cwd()
+            
+            # Project CLAUDE.md
+            project_template = self._get_project_claude_template()
+            project_content = self.path_manager.substitute_template_variables(
+                project_template, {"PROJECT_PATH": str(target_dir)}
+            )
+            project_claude_path = target_dir / "CLAUDE.md"
+            
+            comparison = self.compare_file_with_existing(project_content, project_claude_path)
+            preview["project_changes"].append({
+                "file": str(project_claude_path),
+                "comparison": comparison,
+                "action": "create" if not comparison["destination_exists"] else 
+                         ("skip" if comparison["content_identical"] else "update")
+            })
+            
+            if not comparison["destination_exists"]:
+                preview["new_files"] += 1
+            elif not comparison["content_identical"]:
+                preview["modified_files"] += 1
+            else:
+                preview["identical_files"] += 1
+            
+            # SESSION_CONTINUITY.md
+            session_template = self._get_session_continuity_template()
+            session_content = self.path_manager.substitute_template_variables(session_template)
+            session_path = target_dir / "SESSION_CONTINUITY.md"
+            
+            comparison = self.compare_file_with_existing(session_content, session_path)
+            preview["project_changes"].append({
+                "file": str(session_path),
+                "comparison": comparison,
+                "action": "create" if not comparison["destination_exists"] else 
+                         ("skip" if comparison["content_identical"] else "update")
+            })
+            
+            if not comparison["destination_exists"]:
+                preview["new_files"] += 1
+            elif not comparison["content_identical"]:
+                preview["modified_files"] += 1
+            else:
+                preview["identical_files"] += 1
+        
+        preview["total_files_affected"] = preview["new_files"] + preview["modified_files"] + preview["identical_files"]
+        
+        return preview
+    
+    def display_deployment_preview(self, deploy_global: bool = True, deploy_project: bool = True, 
+                                 project_path: Optional[Union[str, Path]] = None) -> bool:
+        """
+        Display deployment preview and get user confirmation.
+        
+        Args:
+            deploy_global: Whether global deployment is planned
+            deploy_project: Whether project deployment is planned
+            project_path: Target project directory
+            
+        Returns:
+            True if user wants to proceed with deployment
+        """
+        preview = self.preview_deployment_changes(deploy_global, deploy_project, project_path)
+        
+        print(f"\n🔍 Deployment Preview")
+        print("=" * 50)
+        print(f"Total files affected: {preview['total_files_affected']}")
+        print(f"  • New files: {preview['new_files']}")
+        print(f"  • Modified files: {preview['modified_files']}")
+        print(f"  • Identical files: {preview['identical_files']}")
+        
+        if preview["global_changes"]:
+            print(f"\n📂 Global Changes:")
+            for change in preview["global_changes"]:
+                action_emoji = {"create": "✨", "update": "📝", "skip": "✅"}
+                print(f"   {action_emoji.get(change['action'], '❓')} {change['action'].title()}: {change['file']}")
+                if change["action"] == "update":
+                    comp = change["comparison"]
+                    print(f"      Size: {comp['source_size']:,} bytes ({comp['size_difference']:+d})")
+        
+        if preview["project_changes"]:
+            print(f"\n📁 Project Changes:")
+            for change in preview["project_changes"]:
+                action_emoji = {"create": "✨", "update": "📝", "skip": "✅"}
+                print(f"   {action_emoji.get(change['action'], '❓')} {change['action'].title()}: {change['file']}")
+                if change["action"] == "update":
+                    comp = change["comparison"]
+                    print(f"      Size: {comp['source_size']:,} bytes ({comp['size_difference']:+d})")
+        
+        if preview["modified_files"] == 0 and preview["new_files"] == 0:
+            print(f"\n✅ All files are up to date - no changes needed")
+            return False
+        
+        # Ask for confirmation
+        while True:
+            choice = input(f"\nProceed with deployment? [Y/n] ").strip().lower()
+            if choice in ['', 'y', 'yes']:
+                return True
+            elif choice in ['n', 'no']:
+                return False
+            else:
+                print("Please enter 'y' (yes) or 'n' (no)")
+    
+    def compare_file_with_existing(self, source_content: str, destination_path: Path) -> Dict[str, Any]:
+        """
+        Compare source content with existing destination file.
+        
+        Args:
+            source_content: Content to be written
+            destination_path: Path to existing file
+            
+        Returns:
+            Comparison results dictionary
+        """
+        comparison = {
+            "destination_exists": destination_path.exists(),
+            "size_difference": 0,
+            "content_identical": False,
+            "source_size": len(source_content.encode('utf-8')),
+            "destination_size": 0,
+            "source_checksum": hashlib.md5(source_content.encode('utf-8')).hexdigest(),
+            "destination_checksum": None,
+            "differences": []
+        }
+        
+        if not destination_path.exists():
+            comparison["differences"].append("Destination file does not exist - will be created")
+            return comparison
+        
+        try:
+            with open(destination_path, 'r', encoding='utf-8') as f:
+                existing_content = f.read()
+            
+            comparison["destination_size"] = len(existing_content.encode('utf-8'))
+            comparison["destination_checksum"] = hashlib.md5(existing_content.encode('utf-8')).hexdigest()
+            comparison["size_difference"] = comparison["source_size"] - comparison["destination_size"]
+            comparison["content_identical"] = comparison["source_checksum"] == comparison["destination_checksum"]
+            
+            if not comparison["content_identical"]:
+                comparison["differences"].append(f"Content differs (checksum mismatch)")
+                
+                if comparison["size_difference"] != 0:
+                    comparison["differences"].append(
+                        f"Size difference: {comparison['size_difference']:+d} bytes "
+                        f"({comparison['source_size']} vs {comparison['destination_size']})"
+                    )
+                
+                # Simple line-by-line difference detection
+                source_lines = source_content.splitlines()
+                dest_lines = existing_content.splitlines()
+                
+                if len(source_lines) != len(dest_lines):
+                    comparison["differences"].append(
+                        f"Line count differs: {len(source_lines)} vs {len(dest_lines)}"
+                    )
+                
+                # Find first differing line (for quick preview)
+                for i, (src_line, dest_line) in enumerate(zip(source_lines, dest_lines)):
+                    if src_line != dest_line:
+                        comparison["differences"].append(
+                            f"First difference at line {i+1}: content differs"
+                        )
+                        break
+            else:
+                comparison["differences"].append("Files are identical")
+                
+        except Exception as e:
+            comparison["differences"].append(f"Error reading destination file: {str(e)}")
+        
+        return comparison
+    
+    def display_file_comparison(self, source_content: str, destination_path: Path, 
+                               file_purpose: str = "file") -> bool:
+        """
+        Display file comparison results to user and get confirmation.
+        
+        Args:
+            source_content: Content to be written
+            destination_path: Path to existing file
+            file_purpose: Description of the file being compared
+            
+        Returns:
+            True if user wants to proceed, False otherwise
+        """
+        comparison = self.compare_file_with_existing(source_content, destination_path)
+        
+        print(f"\n📊 File Comparison Report: {file_purpose}")
+        print("=" * 50)
+        print(f"Destination: {destination_path}")
+        
+        if not comparison["destination_exists"]:
+            print("✅ New file - no existing file to compare")
+            return True
+        
+        print(f"Source size: {comparison['source_size']:,} bytes")
+        print(f"Destination size: {comparison['destination_size']:,} bytes")
+        
+        if comparison["content_identical"]:
+            print("✅ Files are identical - no changes needed")
+            return False  # No need to write identical content
+        
+        print(f"📊 Comparison Results:")
+        for difference in comparison["differences"]:
+            print(f"   • {difference}")
+        
+        print(f"\n🔍 File Details:")
+        print(f"   Source checksum: {comparison['source_checksum'][:8]}...")
+        print(f"   Destination checksum: {comparison['destination_checksum'][:8] if comparison['destination_checksum'] else 'N/A'}...")
+        
+        # Ask user for confirmation
+        while True:
+            choice = input(f"\nProceed with {file_purpose} update? [Y/n/v(iew)] ").strip().lower()
+            
+            if choice == 'v' or choice == 'view':
+                self._display_file_differences(source_content, destination_path)
+                continue
+            elif choice in ['', 'y', 'yes']:
+                return True
+            elif choice in ['n', 'no']:
+                return False
+            else:
+                print("Please enter 'y' (yes), 'n' (no), or 'v' (view differences)")
+    
+    def _display_file_differences(self, source_content: str, destination_path: Path):
+        """
+        Display detailed file differences.
+        
+        Args:
+            source_content: Source content
+            destination_path: Path to existing file
+        """
+        try:
+            with open(destination_path, 'r', encoding='utf-8') as f:
+                existing_content = f.read()
+            
+            source_lines = source_content.splitlines()
+            dest_lines = existing_content.splitlines()
+            
+            print(f"\n🔍 File Differences Preview (first 20 lines):")
+            print("-" * 60)
+            
+            max_lines = min(20, max(len(source_lines), len(dest_lines)))
+            
+            for i in range(max_lines):
+                src_line = source_lines[i] if i < len(source_lines) else "<EOF>"
+                dest_line = dest_lines[i] if i < len(dest_lines) else "<EOF>"
+                
+                if src_line != dest_line:
+                    print(f"Line {i+1:2d}:")
+                    print(f"  - {dest_line[:60]}{'...' if len(dest_line) > 60 else ''}")
+                    print(f"  + {src_line[:60]}{'...' if len(src_line) > 60 else ''}")
+                    print()
+            
+            if max(len(source_lines), len(dest_lines)) > 20:
+                print(f"... ({max(len(source_lines), len(dest_lines)) - 20} more lines)")
+                
+        except Exception as e:
+            print(f"❌ Error displaying differences: {e}")
