@@ -1,0 +1,264 @@
+{
+  "platform_detection": {
+    "current_platform": "darwin",
+    "username": "scarmatrix",
+    "macOS": {
+      "detected_platform": "darwin",
+      "script_extension": "setup"
+    },
+    "Linux": {
+      "detected_platform": "linux",
+      "script_extension": "setup"
+    },
+    "Windows": {
+      "detected_platform": "windows",
+      "script_extension": "setup.bat"
+    },
+    "env_USER": {
+      "expected": "testuser",
+      "detected": "testuser",
+      "success": true
+    },
+    "env_USERNAME": {
+      "expected": "testuser",
+      "detected": "testuser",
+      "success": true
+    },
+    "env_default": {
+      "expected": "user",
+      "detected": "user",
+      "success": true
+    }
+  },
+  "path_resolution": {
+    "project_root": {
+      "test_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project",
+      "found_root": "/private/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project",
+      "expected_success": true,
+      "success": false
+    },
+    "nested_subdir": {
+      "test_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project/subdir1/subdir2/subdir3",
+      "found_root": "/private/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project",
+      "expected_success": true,
+      "success": false
+    },
+    "parent_dir": {
+      "test_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7",
+      "found_root": null,
+      "expected_success": true,
+      "success": false
+    },
+    "non_project": {
+      "test_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/non_project",
+      "found_root": null,
+      "expected_success": false,
+      "success": true
+    },
+    "global_claude_dir": {
+      "path": "/Users/scarmatrix/.claude",
+      "exists": true,
+      "is_directory": true
+    },
+    "project_directories": {
+      "memory_dir": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project/memory",
+      "patterns_dir": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmp__gwk9w7/test_project/patterns",
+      "memory_exists": true,
+      "patterns_exists": true
+    },
+    "normalize__unix_style_path": {
+      "original": "/unix/style/path",
+      "normalized": "/unix/style/path",
+      "success": true
+    },
+    "normalize_relative_path": {
+      "original": "relative/path",
+      "normalized": "/Users/scarmatrix/Project/CLAUDE_improvement/relative/path",
+      "success": true
+    },
+    "normalize_.._windows_style_path": {
+      "original": "..\\windows\\style\\path",
+      "normalized": "/Users/scarmatrix/Project/CLAUDE_improvement/..\\windows\\style\\path",
+      "success": true
+    },
+    "normalize_mixed_path_separators": {
+      "original": "mixed/path\\separators",
+      "normalized": "/Users/scarmatrix/Project/CLAUDE_improvement/mixed/path\\separators",
+      "success": true
+    }
+  },
+  "template_substitution": {
+    "{{USER_NAME}}": {
+      "template": "{{USER_NAME}}",
+      "expected": "testuser",
+      "result": "testuser",
+      "success": true
+    },
+    "{{PROJECT_NAME}}": {
+      "template": "{{PROJECT_NAME}}",
+      "expected": "testproject",
+      "result": "testproject",
+      "success": true
+    },
+    "{{PLATFORM}}": {
+      "template": "{{PLATFORM}}",
+      "expected": "darwin",
+      "result": "darwin",
+      "success": true
+    },
+    "{{GLOBAL_CLAUDE_DIR}}": {
+      "template": "{{GLOBAL_CLAUDE_DIR}}",
+      "expected": "/Users/scarmatrix/.claude",
+      "result": "/Users/scarmatrix/.claude",
+      "success": true
+    },
+    "complex_template": {
+      "has_unsubstituted": false,
+      "unsubstituted_lines": [],
+      "contains_username": true,
+      "contains_platform": true,
+      "contains_custom_var": true,
+      "success": true
+    },
+    "unix_style": {
+      "template": "{{GLOBAL_CLAUDE_DIR}}/config/settings.json",
+      "result": "/Users/scarmatrix/.claude/config/settings.json",
+      "platform_appropriate": true
+    },
+    "mixed_variables": {
+      "template": "Project {{PROJECT_NAME}} for {{USER_NAME}} on {{PLATFORM}}",
+      "result": "Project testproject for testuser on darwin",
+      "platform_appropriate": true
+    }
+  },
+  "directory_operations": {
+    "simple_dir": {
+      "dir_created": true,
+      "file_created": true,
+      "full_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmpn981f5y1/simple_dir",
+      "success": true
+    },
+    "nested/deep/directory/structure": {
+      "dir_created": true,
+      "file_created": true,
+      "full_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmpn981f5y1/nested/deep/directory/structure",
+      "success": true
+    },
+    "unicode_\u00f1ames_\u6d4b\u8bd5": {
+      "dir_created": true,
+      "file_created": true,
+      "full_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmpn981f5y1/unicode_\u00f1ames_\u6d4b\u8bd5",
+      "success": true
+    },
+    "spaces in names": {
+      "dir_created": true,
+      "file_created": true,
+      "full_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmpn981f5y1/spaces in names",
+      "success": true
+    },
+    "special-chars_123": {
+      "dir_created": true,
+      "file_created": true,
+      "full_path": "/var/folders/dy/rbhbt1tn6m76ct7c4787fg0c0000gn/T/tmpn981f5y1/special-chars_123",
+      "success": true
+    },
+    "project_structure": {
+      "directories_created": 4,
+      "structure_valid": true,
+      "success": true
+    }
+  },
+  "script_compatibility": {
+    "python_version_check": {
+      "current_version": "3.13",
+      "meets_requirements": true,
+      "success": true
+    },
+    "platform_detection": {
+      "platform": "Darwin",
+      "supported": true,
+      "success": true
+    },
+    "environment_variables": {
+      "user_detected": true,
+      "home_detected": true,
+      "success": true
+    },
+    "file_permissions": {
+      "read_write": true,
+      "executable": true,
+      "success": true
+    },
+    "import_framework": {
+      "framework_path_exists": true,
+      "init_file_exists": true,
+      "importable": true,
+      "success": true
+    },
+    "darwin_script_name": {
+      "expected": "setup",
+      "result": "setup",
+      "success": true
+    },
+    "linux_script_name": {
+      "expected": "setup",
+      "result": "setup",
+      "success": true
+    },
+    "windows_script_name": {
+      "expected": "setup.bat",
+      "result": "setup.bat",
+      "success": true
+    }
+  },
+  "platform_limitations": {
+    "Darwin": {
+      "gatekeeper": "May require Gatekeeper bypass for unsigned scripts",
+      "sandboxing": "App sandboxing may limit file access",
+      "case_sensitivity": "Case-sensitive filesystem by default",
+      "service_management": "Uses launchd for services"
+    },
+    "Darwin_tests": {
+      "case_sensitivity": {
+        "case_sensitive": false
+      }
+    }
+  },
+  "performance_metrics": {
+    "path_manager_init": {
+      "avg_ms": 0.001,
+      "min_ms": 0.001,
+      "max_ms": 0.005,
+      "iterations": 10,
+      "success": true
+    },
+    "find_project_root": {
+      "avg_ms": 0.005,
+      "min_ms": 0.0,
+      "max_ms": 0.044,
+      "iterations": 10,
+      "success": true
+    },
+    "get_global_dir": {
+      "avg_ms": 0.002,
+      "min_ms": 0.0,
+      "max_ms": 0.021,
+      "iterations": 10,
+      "success": true
+    },
+    "template_substitution": {
+      "avg_ms": 0.001,
+      "min_ms": 0.001,
+      "max_ms": 0.006,
+      "iterations": 10,
+      "success": true
+    },
+    "path_normalization": {
+      "avg_ms": 0.006,
+      "min_ms": 0.005,
+      "max_ms": 0.012,
+      "iterations": 10,
+      "success": true
+    }
+  }
+}
