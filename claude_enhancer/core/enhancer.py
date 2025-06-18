@@ -1011,7 +1011,7 @@ Generated: {{USER_NAME}} | Claude Enhancement Framework v1.0.0"""
         return preview
     
     def display_deployment_preview(self, deploy_global: bool = True, deploy_project: bool = True, 
-                                 project_path: Optional[Union[str, Path]] = None) -> bool:
+                                 project_path: Optional[Union[str, Path]] = None, force: bool = False) -> bool:
         """
         Display deployment preview and get user confirmation.
         
@@ -1019,6 +1019,7 @@ Generated: {{USER_NAME}} | Claude Enhancement Framework v1.0.0"""
             deploy_global: Whether global deployment is planned
             deploy_project: Whether project deployment is planned
             project_path: Target project directory
+            force: Skip confirmation prompts when True
             
         Returns:
             True if user wants to proceed with deployment
@@ -1052,9 +1053,16 @@ Generated: {{USER_NAME}} | Claude Enhancement Framework v1.0.0"""
         
         if preview["modified_files"] == 0 and preview["new_files"] == 0:
             print(f"\n✅ All files are up to date - no changes needed")
+            if force:
+                print("🔧 Force mode enabled - proceeding with deployment")
+                return True
             return False
         
-        # Ask for confirmation
+        # Ask for confirmation (skip if force mode)
+        if force:
+            print("🔧 Force mode enabled - proceeding with deployment")
+            return True
+            
         while True:
             choice = input(f"\nProceed with deployment? [Y/n] ").strip().lower()
             if choice in ['', 'y', 'yes']:

@@ -237,12 +237,12 @@ def interactive_setup():
 
 
 def discover_operational_scripts():
-    """Discover and categorize operational scripts from CLAUDE improvement project."""
-    claude_improvement_dir = Path("/Users/scarmatrix/Project/CLAUDE_improvement")
-    scripts_dir = claude_improvement_dir / "scripts"
+    """Discover and categorize operational scripts from framework directory."""
+    framework_dir = Path(__file__).parent.absolute()
+    scripts_dir = framework_dir / "scripts"
     
     if not scripts_dir.exists():
-        print(f"⚠️  CLAUDE improvement scripts directory not found: {scripts_dir}")
+        print(f"⚠️  Framework scripts directory not found: {scripts_dir}")
         return {}
     
     script_categories = {
@@ -495,7 +495,8 @@ def setup_framework(args=None):
     should_proceed = enhancer.display_deployment_preview(
         deploy_global=config["deploy_global"],
         deploy_project=config["deploy_project"],
-        project_path=config['claude_md_path']
+        project_path=config['claude_md_path'],
+        force=args.force if args else False
     )
     
     if not should_proceed:
