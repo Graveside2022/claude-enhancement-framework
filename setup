@@ -181,6 +181,42 @@ def interactive_setup():
     deploy_global = choice in ["1", "3"]
     deploy_project = choice in ["2", "3"]
     
+    # Operational Scripts Configuration
+    print("\n🔧 Operational Scripts Configuration:")
+    print("Deploy comprehensive operational toolkit including:")
+    print("  • Backup automation (120-minute daemon)")
+    print("  • Development tools (checkpoint, cleanup)")
+    print("  • Monitoring systems (performance, token usage)")
+    print("  • Management utilities (session handling)")
+    
+    deploy_ops = input("Deploy operational scripts? [Y/n]: ").strip().lower()
+    deploy_operational_scripts = deploy_ops != 'n'
+    
+    ops_install_path = None
+    if deploy_operational_scripts:
+        print("\n📁 Operational Scripts Installation:")
+        print("1. User local (~/.local/bin) - accessible system-wide")
+        print("2. Project scripts directory - project-specific")
+        print("3. Custom directory")
+        
+        ops_choice = input("Choose installation location [1]: ").strip() or "1"
+        
+        if ops_choice == "1":
+            ops_install_path = Path.home() / ".local" / "bin"
+        elif ops_choice == "2":
+            ops_install_path = claude_md_path / "scripts"
+        elif ops_choice == "3":
+            custom_ops_path = input("Enter custom operational scripts directory: ").strip()
+            if custom_ops_path:
+                if path_manager:
+                    ops_install_path = path_manager.get_safe_directory_path(
+                        custom_ops_path, None, "operational scripts"
+                    )
+                else:
+                    ops_install_path = _basic_path_validation(custom_ops_path, Path.home() / ".local" / "bin", "operational scripts")
+            else:
+                ops_install_path = Path.home() / ".local" / "bin"
+    
     # Performance options
     print("\n⚡ Performance Configuration:")
     session_lines = input("Session continuity lines [750]: ").strip() or "750"
@@ -194,8 +230,226 @@ def interactive_setup():
         "session_lines": int(session_lines),
         "cache_target": float(cache_target),
         "claude_md_path": claude_md_path,
-        "custom_install_path": custom_install_path
+        "custom_install_path": custom_install_path,
+        "deploy_operational_scripts": deploy_operational_scripts,
+        "ops_install_path": ops_install_path
     }
+
+
+def discover_operational_scripts():
+    """Discover and categorize operational scripts from CLAUDE improvement project."""
+    claude_improvement_dir = Path("/Users/scarmatrix/Project/CLAUDE_improvement")
+    scripts_dir = claude_improvement_dir / "scripts"
+    
+    if not scripts_dir.exists():
+        print(f"⚠️  CLAUDE improvement scripts directory not found: {scripts_dir}")
+        return {}
+    
+    script_categories = {
+        "automation": [],
+        "backup": [],
+        "development": [],
+        "monitoring": [],
+        "management": []
+    }
+    
+    # Categorize scripts based on filename patterns and functionality
+    automation_patterns = ["auto_", "daemon", "service", "install_"]
+    backup_patterns = ["backup", "archive", "restore"]
+    development_patterns = ["checkpoint", "test_", "validate", "demo"]
+    monitoring_patterns = ["monitor", "status", "performance", "token_usage"]
+    management_patterns = ["cleanup", "handoff", "session", "continue", "start_", "setup_"]
+    
+    for script_file in scripts_dir.iterdir():
+        if script_file.is_file() and (script_file.suffix in ['.sh', '.py'] or script_file.name in ['checkpoint', 'cleanup']):
+            script_name = script_file.name.lower()
+            categorized = False
+            
+            # Check each category
+            for pattern in automation_patterns:
+                if pattern in script_name:
+                    script_categories["automation"].append(script_file)
+                    categorized = True
+                    break
+            
+            if not categorized:
+                for pattern in backup_patterns:
+                    if pattern in script_name:
+                        script_categories["backup"].append(script_file)
+                        categorized = True
+                        break
+            
+            if not categorized:
+                for pattern in development_patterns:
+                    if pattern in script_name:
+                        script_categories["development"].append(script_file)
+                        categorized = True
+                        break
+            
+            if not categorized:
+                for pattern in monitoring_patterns:
+                    if pattern in script_name:
+                        script_categories["monitoring"].append(script_file)
+                        categorized = True
+                        break
+            
+            if not categorized:
+                for pattern in management_patterns:
+                    if pattern in script_name:
+                        script_categories["management"].append(script_file)
+                        categorized = True
+                        break
+            
+            # If still not categorized, add to management as default
+            if not categorized:
+                script_categories["management"].append(script_file)
+    
+    return script_categories
+
+
+def deploy_operational_scripts(config, total_metrics):
+    """Deploy operational scripts to specified location."""
+    if not config.get("deploy_operational_scripts", False):
+        return {"success": True, "message": "Operational scripts deployment skipped"}
+    
+    print("\n🔧 Deploying Operational Scripts...")
+    start_time = time.time()
+    
+    # Discover available scripts
+    script_categories = discover_operational_scripts()
+    total_scripts = sum(len(scripts) for scripts in script_categories.values())
+    
+    if total_scripts == 0:
+        return {"success": False, "errors": ["No operational scripts found to deploy"]}
+    
+    print(f"📊 Found {total_scripts} operational scripts across {len(script_categories)} categories")
+    
+    # Prepare installation directory
+    install_path = Path(config["ops_install_path"])
+    install_path.mkdir(parents=True, exist_ok=True)
+    
+    if not install_path.exists() or not install_path.is_dir():
+        return {"success": False, "errors": [f"Cannot create installation directory: {install_path}"]}
+    
+    deployed_scripts = []
+    deployment_errors = []
+    scripts_made_executable = []
+    aliases_created = []
+    
+    # Deploy scripts by category
+    for category, scripts in script_categories.items():
+        if not scripts:
+            continue
+            
+        print(f"\n📦 Deploying {category} scripts ({len(scripts)} files)...")
+        
+        for script_file in scripts:
+            try:
+                # Determine target filename
+                target_name = script_file.name
+                
+                # For key scripts, create simple command names
+                if script_file.name == "checkpoint_enhanced.py":
+                    # Also create a 'checkpoint-enhanced' command
+                    target_enhanced = install_path / "checkpoint-enhanced"
+                    create_python_wrapper(script_file, target_enhanced)
+                    deployed_scripts.append(target_enhanced)
+                elif script_file.name == "cleanup":
+                    target_name = "claude-cleanup"
+                elif script_file.name == "checkpoint":
+                    target_name = "claude-checkpoint"
+                
+                target_path = install_path / target_name
+                
+                # Copy script file
+                import shutil
+                shutil.copy2(script_file, target_path)
+                
+                # Make executable
+                target_path.chmod(0o755)
+                scripts_made_executable.append(str(target_path))
+                deployed_scripts.append(target_path)
+                
+                print(f"  ✅ {script_file.name} → {target_path.name}")
+                
+            except Exception as e:
+                error_msg = f"Failed to deploy {script_file.name}: {e}"
+                deployment_errors.append(error_msg)
+                print(f"  ❌ {error_msg}")
+    
+    # Create convenience aliases for key commands
+    key_aliases = {
+        "claude-checkpoint": ["checkpoint", "cp"],
+        "claude-cleanup": ["cleanup", "clean"],
+        "backup_daemon.py": ["claude-backup"],
+        "session_restore.py": ["claude-restore"]
+    }
+    
+    # Update PATH if installing to ~/.local/bin
+    if str(install_path) == str(Path.home() / ".local" / "bin"):
+        setup_user_path_if_needed()
+    
+    deployment_time = time.time() - start_time
+    
+    # Update total metrics
+    total_metrics["files_created"] += len(deployed_scripts)
+    total_metrics["scripts_deployed"] = len(deployed_scripts)
+    total_metrics["script_categories"] = len([cat for cat, scripts in script_categories.items() if scripts])
+    
+    return {
+        "success": len(deployment_errors) == 0,
+        "deployment_time": deployment_time,
+        "scripts_deployed": len(deployed_scripts),
+        "scripts_made_executable": len(scripts_made_executable),
+        "deployment_errors": deployment_errors,
+        "deployed_scripts": [str(path) for path in deployed_scripts],
+        "script_categories": {cat: len(scripts) for cat, scripts in script_categories.items() if scripts},
+        "install_path": str(install_path)
+    }
+
+
+def create_python_wrapper(source_script, target_path):
+    """Create a shell wrapper for Python scripts."""
+    wrapper_content = f"""#!/bin/bash
+# Auto-generated wrapper for {source_script.name}
+# Created by Claude Enhancement Framework Setup
+
+python3 "{source_script}" "$@"
+"""
+    
+    target_path.write_text(wrapper_content)
+    target_path.chmod(0o755)
+
+
+def setup_user_path_if_needed():
+    """Ensure ~/.local/bin is in user's PATH."""
+    local_bin = Path.home() / ".local" / "bin"
+    
+    # Check if already in PATH
+    current_path = os.environ.get('PATH', '')
+    if str(local_bin) in current_path:
+        print("✅ ~/.local/bin already in PATH")
+        return
+    
+    # Add to shell profile
+    shell_profiles = ['.bashrc', '.zshrc', '.profile']
+    
+    for profile_name in shell_profiles:
+        profile_path = Path.home() / profile_name
+        if profile_path.exists():
+            # Check if PATH export already exists
+            profile_content = profile_path.read_text()
+            if '.local/bin' not in profile_content:
+                with profile_path.open('a') as f:
+                    f.write(f'\n# Added by Claude Enhancement Framework\nexport PATH="$HOME/.local/bin:$PATH"\n')
+                print(f"✅ Added ~/.local/bin to PATH in {profile_name}")
+            break
+    else:
+        # Create .profile if no shell profile exists
+        profile_path = Path.home() / '.profile'
+        with profile_path.open('w') as f:
+            f.write('# Created by Claude Enhancement Framework\nexport PATH="$HOME/.local/bin:$PATH"\n')
+        print("✅ Created .profile and added ~/.local/bin to PATH")
 
 
 def setup_framework(args=None):
@@ -250,6 +504,11 @@ def setup_framework(args=None):
     
     total_files_created = 0
     total_dirs_created = 0
+    total_metrics = {
+        "files_created": 0,
+        "scripts_deployed": 0,
+        "script_categories": 0
+    }
     
     # Deploy global configuration
     if config["deploy_global"]:
@@ -289,6 +548,25 @@ def setup_framework(args=None):
             for error in project_results["errors"]:
                 print(f"   {error}")
     
+    # Deploy operational scripts
+    operational_results = deploy_operational_scripts(config, total_metrics)
+    if operational_results["success"] and config.get("deploy_operational_scripts", False):
+        print(f"✅ Operational scripts deployment successful ({operational_results['deployment_time']:.3f}s)")
+        print(f"   Scripts deployed: {operational_results['scripts_deployed']}")
+        print(f"   Categories: {operational_results['script_categories']}")
+        print(f"   Installation path: {operational_results['install_path']}")
+        
+        # Show deployed script categories
+        for category, count in operational_results['script_categories'].items():
+            if count > 0:
+                print(f"   📦 {category}: {count} scripts")
+        
+        total_files_created += operational_results['scripts_deployed']
+    elif not operational_results["success"] and config.get("deploy_operational_scripts", False):
+        print("❌ Operational scripts deployment failed:")
+        for error in operational_results["deployment_errors"]:
+            print(f"   {error}")
+    
     # Initialize framework
     print("\n🎯 Initializing optimization systems...")
     init_results = enhancer.initialize_framework()
@@ -324,23 +602,46 @@ def setup_framework(args=None):
     print(f"   Total time: {setup_time:.2f}s")
     print(f"   Files created: {total_files_created}")
     print(f"   Directories created: {total_dirs_created}")
+    if config.get("deploy_operational_scripts", False):
+        print(f"   Operational scripts: {total_metrics.get('scripts_deployed', 0)} deployed")
+        print(f"   Script categories: {total_metrics.get('script_categories', 0)} categories")
     print(f"   User: {config['username']}")
     print(f"   Project: {config['project_name']}")
     
     # Next steps
     print("\n📋 Next Steps:")
+    step_num = 1
     if config["deploy_global"]:
-        print("   1. Restart Claude Code to load global configuration")
+        print(f"   {step_num}. Restart Claude Code to load global configuration")
+        step_num += 1
     if config["deploy_project"]:
-        print("   2. Use 'boot' or 'setup' commands in Claude for project initialization")
-    print("   3. Enjoy 98.5% faster Claude experience!")
+        print(f"   {step_num}. Use 'boot' or 'setup' commands in Claude for project initialization")
+        step_num += 1
+    if config.get("deploy_operational_scripts", False):
+        print(f"   {step_num}. Open new terminal or run 'source ~/.profile' to access operational commands")
+        step_num += 1
+        print(f"   {step_num}. Try commands: claude-checkpoint, claude-cleanup, backup_daemon.py --help")
+        step_num += 1
+    print(f"   {step_num}. Enjoy 98.5% faster Claude experience with operational toolkit!")
+    
+    # Operational tools guidance
+    if config.get("deploy_operational_scripts", False):
+        print("\n🔧 Operational Tools Available:")
+        print("   • claude-checkpoint - Enhanced checkpoint system")
+        print("   • claude-cleanup - Project cleanup automation") 
+        print("   • backup_daemon.py - 120-minute backup automation")
+        print("   • session_restore.py - Session state restoration")
+        print("   • Performance monitoring and token usage tools")
+        print(f"   • All tools installed in: {operational_results.get('install_path', 'installation path')}")
     
     print("\n📖 Documentation:")
     print("   Framework guide: https://github.com/your-username/claude-enhancement-framework")
     print("   Pattern reference: docs/PATTERNS.md")
     print("   Performance benchmarks: docs/BENCHMARKS.md")
+    if config.get("deploy_operational_scripts", False):
+        print("   Operational scripts: Run any script with --help for usage information")
     
-    print(f"\n🚀 Framework ready! Your Claude experience is now optimized.")
+    print(f"\n🚀 Framework ready! Your Claude experience is now optimized with complete operational toolkit.")
 
 
 if __name__ == "__main__":

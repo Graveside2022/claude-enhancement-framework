@@ -1160,7 +1160,7 @@ Generated: {{USER_NAME}} | Claude Enhancement Framework v1.0.0"""
         
         if comparison["content_identical"]:
             print("✅ Files are identical - no changes needed")
-            return False  # No need to write identical content
+            return True  # Proceed with writing since user requested it
         
         print(f"📊 Comparison Results:")
         for difference in comparison["differences"]:
