@@ -240,7 +240,8 @@ def setup_framework(args=None):
     print(f"\n🔍 Analyzing deployment requirements...")
     should_proceed = enhancer.display_deployment_preview(
         deploy_global=config["deploy_global"],
-        deploy_project=config["deploy_project"]
+        deploy_project=config["deploy_project"],
+        project_path=config['claude_md_path']
     )
     
     if not should_proceed:
@@ -269,7 +270,7 @@ def setup_framework(args=None):
     # Deploy project configuration
     if config["deploy_project"]:
         print(f"\n📁 Deploying project configuration...")
-        project_results = enhancer.deploy_project_configuration(force=args.force if args else False)
+        project_results = enhancer.deploy_project_configuration(force=args.force if args else False, project_path=config['claude_md_path'])
         
         if project_results["success"]:
             print(f"✅ Project deployment successful ({project_results['deployment_time']:.3f}s)")
