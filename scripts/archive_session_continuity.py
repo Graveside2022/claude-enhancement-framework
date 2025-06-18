@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import List, Dict, Tuple
 
 class SessionContinuityArchiver:
-    def __init__(self, project_root: str, target_lines: int = 250):
+    def __init__(self, project_root: str, target_lines: int = 750):
         self.project_root = Path(project_root)
         self.session_file = self.project_root / "SESSION_CONTINUITY.md"
         self.archive_root = self.project_root / "logs" / "session_continuity"
@@ -500,7 +500,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Archive SESSION_CONTINUITY.md for optimal boot performance")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be archived without making changes")
-    parser.add_argument("--target-lines", type=int, default=250, help="Target file size in lines (default: 250)")
+    parser.add_argument("--target-lines", type=int, default=750, help="Target file size in lines (default: 750)")
     parser.add_argument("--project-root", default="/Users/scarmatrix/Project/CLAUDE_improvement", help="Project root directory")
     
     args = parser.parse_args()

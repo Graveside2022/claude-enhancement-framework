@@ -1,0 +1,109 @@
+{
+  "unified_memory_schema": {
+    "version": "1.0.0",
+    "created": "2025-06-18T00:00:00Z",
+    "user": "Christian",
+    "structure": {
+      "sessions": {
+        "description": "Session-based organization of all memory data",
+        "schema": {
+          "session_id": "string (ISO date + unique identifier)",
+          "start_time": "ISO 8601 timestamp",
+          "end_time": "ISO 8601 timestamp",
+          "user": "string",
+          "context": "string (boot|work|analysis|implementation)",
+          "activities": ["array of activity objects"]
+        }
+      },
+      "activities": {
+        "description": "Unified activity tracking replacing fragmented logs",
+        "types": ["pattern_usage", "error_resolution", "solution_development", "side_effect", "learning_capture"],
+        "schema": {
+          "activity_id": "string (auto-generated)",
+          "type": "string (from types above)",
+          "timestamp": "ISO 8601 timestamp",
+          "pattern_id": "string (if applicable)",
+          "context": "string",
+          "complexity": "number (1-10)",
+          "result": "string (success|failure|partial)",
+          "quality_metrics": {
+            "code_quality": "number (1-10)",
+            "performance": "number (1-10)",
+            "reliability": "number (1-10)",
+            "integration": "number (1-10)",
+            "documentation": "number (1-10)",
+            "overall_score": "number (calculated average)"
+          },
+          "impact_metrics": {
+            "time_saved": "number (minutes)",
+            "user_satisfaction": "string (low|medium|high)",
+            "reusability_index": "number (0-100%)",
+            "error_prevention": "number (0-100%)"
+          },
+          "related_activities": ["array of activity_ids"],
+          "notes": "string",
+          "side_effects": ["array of side effect objects"]
+        }
+      },
+      "patterns": {
+        "description": "Pattern lifecycle and performance tracking",
+        "schema": {
+          "pattern_id": "string",
+          "category": "string (architecture|generation|refactoring|bug_fixes)",
+          "status": "string (candidate|active|deprecated)",
+          "creation_date": "ISO 8601 timestamp",
+          "usage_count": "number",
+          "success_rate": "number (0-100%)",
+          "average_quality": "number (1-10)",
+          "contexts": ["array of context strings"],
+          "promotion_criteria": {
+            "usage_frequency": "boolean",
+            "success_rate": "boolean", 
+            "quality_score": "boolean",
+            "reusability_index": "boolean",
+            "user_satisfaction": "boolean",
+            "technical_debt": "boolean"
+          },
+          "applications": ["array of activity_ids"]
+        }
+      },
+      "errors": {
+        "description": "Error pattern tracking and resolution",
+        "schema": {
+          "error_id": "string",
+          "pattern_name": "string",
+          "category": "string (configuration|implementation|integration|performance)",
+          "frequency": "string (low|medium|high)",
+          "status": "string (active|resolved|monitoring)",
+          "first_occurrence": "ISO 8601 timestamp",
+          "last_occurrence": "ISO 8601 timestamp",
+          "root_cause": "string",
+          "resolution_activity_id": "string (links to activity)",
+          "prevention_pattern_id": "string (if applicable)",
+          "quality_impact": "number (change in quality score)",
+          "resolution_time": "number (minutes)"
+        }
+      },
+      "analytics": {
+        "description": "Aggregated metrics and insights",
+        "schema": {
+          "last_updated": "ISO 8601 timestamp",
+          "totals": {
+            "patterns_available": "number",
+            "patterns_used": "number",
+            "total_applications": "number",
+            "success_rate": "number (0-100%)",
+            "average_quality": "number (1-10)",
+            "total_time_saved": "number (minutes)"
+          },
+          "trends": {
+            "quality_trend": "string (improving|stable|declining)",
+            "usage_trend": "string (increasing|stable|decreasing)",
+            "error_trend": "string (improving|stable|worsening)"
+          },
+          "recommendations": ["array of recommendation objects"]
+        }
+      }
+    }
+  }
+}

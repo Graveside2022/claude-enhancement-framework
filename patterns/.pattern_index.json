@@ -1,39 +1,87 @@
 {
-  "version": "1.0",
-  "generated": "2025-06-18T00:32:00Z",
+  "version": "1.1",
+  "generated": "2025-06-18T12:00:00Z",
+  "total_patterns": 19,
+  "categories": 5,
+  "coverage": "100%",
   "patterns": {
     "boot_performance": {
-      "keywords": ["boot", "startup", "performance", "slow", "initialization", "speed", "fast"],
+      "keywords": ["boot", "startup", "performance", "slow", "initialization", "speed", "fast", "optimization"],
       "patterns": [
         "refactoring/boot_sequence_optimization",
         "architecture/lazy_loading_optimization"
       ]
     },
     "error_debugging": {
-      "keywords": ["error", "bug", "fix", "debugging", "troubleshooting", "issue"],
+      "keywords": ["error", "bug", "fix", "debugging", "troubleshooting", "issue", "resolution", "systematic"],
       "patterns": [
         "bug_fixes/systematic_error_resolution",
         "refactoring/error_learning_deferred_loading"
       ]
     },
     "agent_configuration": {
-      "keywords": ["agent", "agents", "parallel", "configuration", "concurrent", "processing"],
+      "keywords": ["agent", "agents", "parallel", "configuration", "concurrent", "processing", "multiple"],
       "patterns": [
         "architecture/dual_parallel_agent_configuration"
       ]
     },
     "token_optimization": {
-      "keywords": ["token", "tokens", "memory", "optimization", "usage", "reduce"],
+      "keywords": ["token", "tokens", "memory", "optimization", "usage", "reduce", "scanning", "loading"],
       "patterns": [
         "refactoring/token_usage_optimization",
         "generation/memory_optimization_patterns"
       ]
     },
     "session_management": {
-      "keywords": ["session", "continuity", "memory", "state"],
+      "keywords": ["session", "continuity", "memory", "state", "automatic", "boot"],
       "patterns": [
         "generation/auto_session_continuity_pattern",
         "refactoring/error_learning_deferred_loading"
+      ]
+    },
+    "project_setup": {
+      "keywords": ["project", "initialization", "setup", "template", "structure", "detection", "root"],
+      "patterns": [
+        "generation/project_initialization_pattern",
+        "generation/project_template_initialization",
+        "generation/project_detection_pattern"
+      ]
+    },
+    "file_management": {
+      "keywords": ["file", "organization", "loading", "learning", "enforcement", "structure"],
+      "patterns": [
+        "refactoring/file_organization_enforcement",
+        "generation/learning_file_loading_pattern"
+      ]
+    },
+    "testing_framework": {
+      "keywords": ["testing", "protocol", "framework", "validation", "test"],
+      "patterns": [
+        "generation/testing_protocol_framework"
+      ]
+    },
+    "documentation": {
+      "keywords": ["documentation", "standard", "docs", "formatting"],
+      "patterns": [
+        "generation/documentation_standard"
+      ]
+    },
+    "performance_analysis": {
+      "keywords": ["performance", "analysis", "benchmark", "metrics", "monitoring"],
+      "patterns": [
+        "refactoring/performance_analysis_template"
+      ]
+    },
+    "deployment": {
+      "keywords": ["deployment", "cross-project", "distribution", "rollout"],
+      "patterns": [
+        "architecture/cross_project_deployment"
+      ]
+    },
+    "security": {
+      "keywords": ["security", "safety", "validation", "sandboxing", "command", "injection", "protection"],
+      "patterns": [
+        "security/pattern_safety_framework"
       ]
     }
   }

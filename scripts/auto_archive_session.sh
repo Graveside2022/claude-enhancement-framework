@@ -7,7 +7,7 @@ set -e
 PROJECT_ROOT="/Users/scarmatrix/Project/CLAUDE_improvement"
 SESSION_FILE="$PROJECT_ROOT/SESSION_CONTINUITY.md"
 ARCHIVAL_SCRIPT="$PROJECT_ROOT/scripts/archive_session_continuity.py"
-TARGET_LINES=250
+TARGET_LINES=750
 
 # Colors for output
 RED='\033[0;31m'

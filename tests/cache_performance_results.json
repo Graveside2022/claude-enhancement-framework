@@ -1,0 +1,30 @@
+{
+  "test_timestamp": 1750234317.006739,
+  "project_root": "/Users/scarmatrix/Project/CLAUDE_improvement",
+  "session_state_cache": {
+    "first_load_ms": 1.2199878692626953,
+    "second_load_ms": 0.10514259338378906,
+    "third_load_ms": 0.09298324584960938,
+    "cache_hit_rate": 100.0,
+    "speedup_factor": 11.603174603174603
+  },
+  "context_engine_cache": {
+    "first_analysis_ms": 3.3440589904785156,
+    "second_analysis_ms": 0.015974044799804688,
+    "third_analysis_ms": 0.0040531158447265625,
+    "cache_hit_rate": 100.0,
+    "speedup_factor": 209.34328358208955
+  },
+  "cache_invalidation": {
+    "session_update_preserves_cache": true,
+    "config_update_invalidates_cache": false,
+    "cache_hit_time_ms": 0.10180473327636719,
+    "cache_miss_time_ms": 0.11587142944335938
+  },
+  "overall_metrics": {
+    "average_hit_rate": 100.0,
+    "average_speedup_factor": 110.47322909263208,
+    "target_hit_rate_met": true,
+    "performance_target_met": true
+  }
+}

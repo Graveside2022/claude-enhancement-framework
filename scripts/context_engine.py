@@ -47,10 +47,13 @@ class ProjectHistoryAnalyzer:
         self.memory_path = self.project_root / "memory"
         self.logs_path = self.project_root / "logs"
         self.patterns_path = self.project_root / "patterns"
+        # Add caching infrastructure
+        self._cache = {}
+        self._mtimes = {}
     
-    def analyze_session_history(self) -> Dict[str, Any]:
-        """Analyze session continuity and extract patterns."""
-        history_data = {
+    def _get_empty_history_data(self) -> Dict[str, Any]:
+        """Get empty history data structure."""
+        return {
             'total_sessions': 0,
             'cleanup_operations': 0,
             'optimization_cycles': 0,
@@ -59,8 +62,26 @@ class ProjectHistoryAnalyzer:
             'success_patterns': [],
             'time_patterns': defaultdict(list)
         }
+    
+    def analyze_session_history(self) -> Dict[str, Any]:
+        """Analyze session continuity and extract patterns, with caching."""
+        path = self.session_continuity_path
+        cache_key = 'session_history'
         
-        if not self.session_continuity_path.exists():
+        # Check if file exists and if it has been modified since last read
+        if not path.exists():
+            return self._cache.get(cache_key, self._get_empty_history_data())
+        
+        current_mtime = path.stat().st_mtime
+        last_mtime = self._mtimes.get(str(path))
+        
+        if self._cache.get(cache_key) and last_mtime == current_mtime:
+            return self._cache[cache_key]
+        
+        # Cache miss or file modified - perform analysis
+        history_data = self._get_empty_history_data()
+        
+        if not path.exists():
             return history_data
         
         try:
@@ -82,17 +103,24 @@ class ProjectHistoryAnalyzer:
             performance_metrics = re.findall(perf_pattern, content)
             history_data['performance_improvements'] = performance_metrics
             
-            # Extract common task patterns
+            # Extract common task patterns (optimized single-pass regex)
             task_patterns = [
                 'file reduction', 'token reduction', 'boot optimization',
                 'memory management', 'pattern creation', 'session continuity',
                 'backup system', 'performance monitoring'
             ]
             
-            for pattern in task_patterns:
-                count = len(re.findall(pattern, content, re.IGNORECASE))
-                if count > 0:
-                    history_data['common_tasks'][pattern] = count
+            # Combine patterns into single regex for efficiency
+            combined_pattern = '|'.join(f'({pattern})' for pattern in task_patterns)
+            all_matches = re.findall(combined_pattern, content, re.IGNORECASE)
+            
+            if all_matches:
+                # Count occurrences from the single list of matches
+                for match_groups in all_matches:
+                    for i, match in enumerate(match_groups):
+                        if match:  # Non-empty match
+                            pattern_name = task_patterns[i]
+                            history_data['common_tasks'][pattern_name] += 1
             
             # Extract success indicators
             success_indicators = re.findall(r'✅|SUCCESS|COMPLETE|accomplished', content, re.IGNORECASE)
@@ -100,6 +128,10 @@ class ProjectHistoryAnalyzer:
             
         except Exception as e:
             print(f"Warning: Error analyzing session history: {e}")
+        
+        # Update cache
+        self._cache[cache_key] = history_data
+        self._mtimes[str(path)] = current_mtime
         
         return history_data
     

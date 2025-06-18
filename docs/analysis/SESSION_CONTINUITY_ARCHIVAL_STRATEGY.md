@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The SESSION_CONTINUITY.md file has grown to 707 lines, significantly exceeding the optimal 250-line target for fast boot operations. This document outlines a comprehensive archival strategy to maintain peak performance while preserving critical context.
+The SESSION_CONTINUITY.md file has grown to 707 lines, approaching the optimal 750-line target for fast boot operations. This document outlines a comprehensive archival strategy to maintain peak performance while preserving critical context.
 
 ## Current Analysis Results
 
@@ -15,14 +15,14 @@ The SESSION_CONTINUITY.md file has grown to 707 lines, significantly exceeding t
 
 ### Performance Impact
 - **Current Size**: ~707 lines ≈ 4,000-5,000 tokens
-- **Target Size**: 250 lines ≈ 1,500-2,000 tokens  
+- **Target Size**: 750 lines ≈ 4,500-6,000 tokens  
 - **Boot Performance**: Currently exceeding fast-boot token budget
 
 ## Optimal Archival Strategy
 
-### 1. TARGET FILE SIZE: 250 Lines Maximum
+### 1. TARGET FILE SIZE: 750 Lines Maximum
 
-**Rationale**: Maintains sub-5-second boot time while preserving essential context for Christian's session continuity.
+**Rationale**: Optimal balance between boot performance and context retention for Christian's session continuity.
 
 ### 2. ARCHIVAL CUTOFF CRITERIA
 

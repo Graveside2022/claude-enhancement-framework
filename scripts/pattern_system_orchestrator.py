@@ -202,23 +202,86 @@ class PatternExecutor:
                     if result.stderr:
                         output.append(f"STDERR: {result.stderr}")
                     side_effects.append(f"Executed bash: {step['content'][:50]}...")
+                    
+                    # Log side effects automatically
+                    self._log_side_effect(
+                        source=f"Pattern execution: {step['language']}",
+                        description=f"Executed bash command: {step['content'][:100]}...",
+                        impact="medium" if result.returncode == 0 else "high",
+                        files_affected="unknown",
+                        trigger=f"Pattern step execution"
+                    )
                 else:
                     output.append("SKIPPED: Unsafe bash command detected")
+                    side_effects.append(f"Blocked unsafe command: {step['content'][:50]}...")
             
             elif step['language'] == 'python':
                 # Execute Python code in controlled environment
                 output.append("SIMULATED: Python code execution")
                 side_effects.append(f"Would execute Python: {step['content'][:50]}...")
+                
+                # Log simulation side effect
+                self._log_side_effect(
+                    source="Pattern execution: python",
+                    description=f"Simulated Python execution: {step['content'][:100]}...",
+                    impact="low",
+                    files_affected="none",
+                    trigger="Python code simulation"
+                )
             
             else:
                 output.append(f"UNSUPPORTED: {step['language']} execution")
                 
         except subprocess.TimeoutExpired:
             output.append("ERROR: Command timed out")
+            self._log_side_effect(
+                source="Pattern execution: timeout",
+                description=f"Command timed out: {step['content'][:100]}...",
+                impact="high",
+                files_affected="unknown",
+                trigger="Subprocess timeout"
+            )
         except Exception as e:
             output.append(f"ERROR: {str(e)}")
+            self._log_side_effect(
+                source="Pattern execution: error",
+                description=f"Execution error: {str(e)}",
+                impact="high",
+                files_affected="unknown",
+                trigger=f"Exception during: {step['content'][:50]}..."
+            )
         
         return {'output': output, 'side_effects': side_effects}
+    
+    def _log_side_effect(self, source: str, description: str, impact: str, 
+                        files_affected: str, trigger: str):
+        """Log side effect to side_effects_log.md"""
+        try:
+            side_effects_file = self.project_root / "memory" / "side_effects_log.md"
+            
+            if not side_effects_file.exists():
+                return
+            
+            timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            
+            side_effect_entry = f"""
+### Side Effect - {timestamp}
+**Source**: {source}
+**Description**: {description}
+**Impact**: {impact}
+**Files Affected**: {files_affected}
+**Trigger**: {trigger}
+**Resolution**: pending
+---
+
+"""
+            
+            with open(side_effects_file, 'a') as f:
+                f.write(side_effect_entry)
+                
+        except Exception as e:
+            # Don't fail execution due to logging issues
+            pass
     
     def _execute_instruction_step(self, step: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Process instruction step"""
@@ -566,6 +629,16 @@ class PatternSystemOrchestrator:
                 'execution_success': execution_results and execution_results[0].success,
                 'timestamp': time.time()
             })
+            
+            # Step 5: Log session state side effects
+            if execution_results:
+                self._log_side_effect(
+                    source="Pattern orchestrator",
+                    description=f"Pattern execution completed for: {problem_description[:100]}...",
+                    impact="medium" if execution_results[0].success else "high",
+                    files_affected="session cache, learning archive",
+                    trigger="solve_problem execution"
+                )
             
             return {
                 'success': True,
