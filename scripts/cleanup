@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# Project Cleanup Script
+# Usage: ./scripts/cleanup
+# Organizes generated files into appropriate folders and archives/deletes as needed
+
+PROJECT_ROOT="/Users/scarmatrix/Project/CLAUDE_improvement"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+
+# Create necessary directories if they don't exist
+mkdir -p "$PROJECT_ROOT/docs/reports"
+mkdir -p "$PROJECT_ROOT/docs/analysis" 
+mkdir -p "$PROJECT_ROOT/docs/archive"
+mkdir -p "$PROJECT_ROOT/tests/validation"
+mkdir -p "$PROJECT_ROOT/tests/archive"
+mkdir -p "$PROJECT_ROOT/logs/cleanup"
+
+echo "🧹 Starting project cleanup..."
+
+# Files to keep in root (core project files)
+KEEP_IN_ROOT=(
+    "CLAUDE.md"
+    "SESSION_CONTINUITY.md" 
+    "README.md"
+    "TODO.md"
+    ".gitignore"
+    ".DS_Store"
+    ".aider.input.history"
+    ".claude_session_state.json"
+    ".project_context"
+    "claude_memory_config.yml"
+)
+
+# Move reports to docs/reports
+echo "📊 Moving reports to docs/reports..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_REPORT.md" -exec mv {} "$PROJECT_ROOT/docs/reports/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_TEST_REPORT.md" -exec mv {} "$PROJECT_ROOT/docs/reports/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_VALIDATION_*.md" -exec mv {} "$PROJECT_ROOT/docs/reports/" \;
+
+# Move analysis files to docs/analysis
+echo "📈 Moving analysis files to docs/analysis..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_ANALYSIS.md" -exec mv {} "$PROJECT_ROOT/docs/analysis/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_PLAN.md" -exec mv {} "$PROJECT_ROOT/docs/analysis/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_STRATEGY.md" -exec mv {} "$PROJECT_ROOT/docs/analysis/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_DESIGN.md" -exec mv {} "$PROJECT_ROOT/docs/analysis/" \;
+
+# Move archived/complete documentation to docs/archive
+echo "📦 Moving archived documentation to docs/archive..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_COMPLETE.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_ARCHIVED.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_SUMMARY.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "INTEGRATION_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "OPTIMIZATION_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "QUADRUPLE_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "BOOT_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "STARTUP_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "CACHING_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "PERSISTENT_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "HANDOFF_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "NEXT_SESSION_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "MINIMAL_*.md" -exec mv {} "$PROJECT_ROOT/docs/archive/" \;
+
+# Move test files to tests/validation
+echo "🧪 Moving test files to tests/validation..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "test_*.py" -exec mv {} "$PROJECT_ROOT/tests/validation/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_test.py" -exec mv {} "$PROJECT_ROOT/tests/validation/" \;
+
+# Move temporary test files to tests/archive
+echo "🗃️ Moving temporary test files to tests/archive..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "test_*.txt" -exec mv {} "$PROJECT_ROOT/tests/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_demo.py" -exec mv {} "$PROJECT_ROOT/tests/archive/" \;
+find "$PROJECT_ROOT" -maxdepth 1 -name "*_validation.py" -exec mv {} "$PROJECT_ROOT/tests/archive/" \;
+
+# Move JSON result files to logs
+echo "📋 Moving JSON files to logs..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "*.json" -exec mv {} "$PROJECT_ROOT/logs/" \;
+
+# Delete temporary/obsolete files
+echo "🗑️ Cleaning up temporary files..."
+find "$PROJECT_ROOT" -maxdepth 1 -name "*.tmp" -delete
+find "$PROJECT_ROOT" -maxdepth 1 -name "*.backup" -delete
+find "$PROJECT_ROOT" -maxdepth 1 -name "*~" -delete
+
+# Create cleanup log
+CLEANUP_LOG="$PROJECT_ROOT/logs/cleanup/cleanup_$TIMESTAMP.log"
+echo "📝 Creating cleanup log at $CLEANUP_LOG"
+
+{
+    echo "# Cleanup Log - $TIMESTAMP"
+    echo "## Files Organized:"
+    echo "### Reports moved to docs/reports:"
+    ls "$PROJECT_ROOT/docs/reports/" | sed 's/^/- /'
+    echo "### Analysis moved to docs/analysis:"
+    ls "$PROJECT_ROOT/docs/analysis/" | sed 's/^/- /'
+    echo "### Archive moved to docs/archive:"
+    ls "$PROJECT_ROOT/docs/archive/" | sed 's/^/- /'
+    echo "### Tests moved to tests/validation:"
+    ls "$PROJECT_ROOT/tests/validation/" | sed 's/^/- /'
+    echo "### JSON logs moved to logs:"
+    ls "$PROJECT_ROOT/logs/"*.json 2>/dev/null | sed 's/^/- /'
+    echo "## Root directory after cleanup:"
+    ls -la "$PROJECT_ROOT/" | grep -v "^d" | sed 's/^/- /'
+} > "$CLEANUP_LOG"
+
+# Show final status
+echo "✅ Cleanup complete!"
+echo "📊 Cleanup log: $CLEANUP_LOG"
+echo "📁 Root directory now contains:"
+ls -1 "$PROJECT_ROOT/" | grep -v "^[a-z]" | head -10
+
+# Count files in root
+ROOT_FILES=$(find "$PROJECT_ROOT" -maxdepth 1 -type f | wc -l)
+echo "📈 Root directory files: $ROOT_FILES"

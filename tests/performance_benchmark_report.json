@@ -1,108 +1,108 @@
 {
-  "timestamp": "2025-06-17T17:26:25.468604",
+  "timestamp": "2025-06-17T23:49:57.974546",
   "user": "Christian",
   "benchmarks": {
     "original_startup": {
-      "average_ms": 653.5877582005924,
-      "median_ms": 652.0787500048755,
-      "min_ms": 642.4317499913741,
-      "max_ms": 663.2503750006435,
-      "std_dev_ms": 9.098803717007803,
+      "average_ms": 649.148175198934,
+      "median_ms": 647.0553749968531,
+      "min_ms": 646.7160000029253,
+      "max_ms": 654.9202500027604,
+      "std_dev_ms": 3.4934248278234667,
       "all_times_ms": [
-        642.4317499913741,
-        652.0787500048755,
-        647.7901250036666,
-        662.3877910024021,
-        663.2503750006435
+        647.0553749968531,
+        647.0369589951588,
+        654.9202500027604,
+        646.7160000029253,
+        650.0122919969726
       ]
     },
     "optimized_startup_run_0_memory": {
-      "initial_bytes": 17006592,
-      "final_bytes": 17104896,
-      "peak_bytes": 17039360,
-      "delta_bytes": 98304,
-      "peak_delta_bytes": 32768
+      "initial_bytes": 16875520,
+      "final_bytes": 17072128,
+      "peak_bytes": 17088512,
+      "delta_bytes": 196608,
+      "peak_delta_bytes": 212992
     },
     "optimized_startup_run_1_memory": {
-      "initial_bytes": 17121280,
-      "final_bytes": 17121280,
-      "peak_bytes": 17154048,
-      "delta_bytes": 0,
-      "peak_delta_bytes": 32768
-    },
-    "optimized_startup_run_2_memory": {
-      "initial_bytes": 17121280,
-      "final_bytes": 17350656,
-      "peak_bytes": 17170432,
-      "delta_bytes": 229376,
+      "initial_bytes": 17072128,
+      "final_bytes": 17285120,
+      "peak_bytes": 17121280,
+      "delta_bytes": 212992,
       "peak_delta_bytes": 49152
     },
+    "optimized_startup_run_2_memory": {
+      "initial_bytes": 17285120,
+      "final_bytes": 17301504,
+      "peak_bytes": 17317888,
+      "delta_bytes": 16384,
+      "peak_delta_bytes": 32768
+    },
     "optimized_startup_run_3_memory": {
-      "initial_bytes": 17350656,
-      "final_bytes": 17367040,
-      "peak_bytes": 17399808,
+      "initial_bytes": 17301504,
+      "final_bytes": 17317888,
+      "peak_bytes": 17350656,
       "delta_bytes": 16384,
       "peak_delta_bytes": 49152
     },
     "optimized_startup_run_4_memory": {
-      "initial_bytes": 17367040,
-      "final_bytes": 17416192,
-      "peak_bytes": 17399808,
-      "delta_bytes": 49152,
+      "initial_bytes": 17317888,
+      "final_bytes": 17317888,
+      "peak_bytes": 17350656,
+      "delta_bytes": 0,
       "peak_delta_bytes": 32768
     },
     "optimized_startup_run_5_memory": {
-      "initial_bytes": 17416192,
-      "final_bytes": 17432576,
-      "peak_bytes": 17448960,
-      "delta_bytes": 16384,
+      "initial_bytes": 17317888,
+      "final_bytes": 17317888,
+      "peak_bytes": 17350656,
+      "delta_bytes": 0,
       "peak_delta_bytes": 32768
     },
     "optimized_startup_run_6_memory": {
-      "initial_bytes": 17432576,
-      "final_bytes": 17481728,
-      "peak_bytes": 17514496,
-      "delta_bytes": 49152,
-      "peak_delta_bytes": 81920
+      "initial_bytes": 17317888,
+      "final_bytes": 17465344,
+      "peak_bytes": 17498112,
+      "delta_bytes": 147456,
+      "peak_delta_bytes": 180224
     },
     "optimized_startup_run_7_memory": {
-      "initial_bytes": 17481728,
-      "final_bytes": 17481728,
-      "peak_bytes": 17514496,
+      "initial_bytes": 17465344,
+      "final_bytes": 17465344,
+      "peak_bytes": 17498112,
       "delta_bytes": 0,
       "peak_delta_bytes": 32768
     },
     "optimized_startup_run_8_memory": {
-      "initial_bytes": 17481728,
-      "final_bytes": 17498112,
-      "peak_bytes": 17514496,
-      "delta_bytes": 16384,
-      "peak_delta_bytes": 32768
-    },
-    "optimized_startup_run_9_memory": {
-      "initial_bytes": 17498112,
-      "final_bytes": 17498112,
-      "peak_bytes": 17530880,
+      "initial_bytes": 17465344,
+      "final_bytes": 17465344,
+      "peak_bytes": 17498112,
       "delta_bytes": 0,
       "peak_delta_bytes": 32768
     },
+    "optimized_startup_run_9_memory": {
+      "initial_bytes": 17465344,
+      "final_bytes": 17481728,
+      "peak_bytes": 17514496,
+      "delta_bytes": 16384,
+      "peak_delta_bytes": 49152
+    },
     "optimized_startup": {
-      "average_ms": 6.165053999575321,
-      "median_ms": 6.317311999737285,
-      "min_ms": 5.604042002232745,
-      "max_ms": 6.425542000215501,
-      "std_dev_ms": 0.2757107976605511,
+      "average_ms": 6.5988918009679765,
+      "median_ms": 6.403750507161021,
+      "min_ms": 6.371874987962656,
+      "max_ms": 8.105291999527253,
+      "std_dev_ms": 0.5348520252932283,
       "all_times_ms": [
-        6.3388330017914996,
-        6.425542000215501,
-        6.295790997683071,
-        5.604042002232745,
-        6.089040994993411,
-        6.347749993437901,
-        6.34833300136961,
-        5.8765830035554245,
-        5.940625007497147,
-        6.3839999929768965
+        8.105291999527253,
+        6.631958007346839,
+        6.400417012628168,
+        6.391207993146963,
+        6.38575000630226,
+        6.371874987962656,
+        6.423000013455749,
+        6.390958995325491,
+        6.407084001693875,
+        6.481374992290512
       ]
     },
     "token_usage": {
@@ -117,37 +117,37 @@
       "cache_hits": 0,
       "cache_misses": 82,
       "hit_rate_percent": 0.0,
-      "average_access_time_ms": 1.2450828781300338,
+      "average_access_time_ms": 1.2591630376580103,
       "cache_hit_access_time_ms": 0,
-      "cache_miss_access_time_ms": 1.2450828781300338
+      "cache_miss_access_time_ms": 1.2591630376580103
     },
     "original_memory_pattern_memory": {
-      "initial_bytes": 17547264,
-      "final_bytes": 18497536,
-      "peak_bytes": 18530304,
-      "delta_bytes": 950272,
-      "peak_delta_bytes": 983040
+      "initial_bytes": 17514496,
+      "final_bytes": 18612224,
+      "peak_bytes": 18628608,
+      "delta_bytes": 1097728,
+      "peak_delta_bytes": 1114112
     },
     "optimized_memory_pattern_memory": {
-      "initial_bytes": 18694144,
-      "final_bytes": 19103744,
-      "peak_bytes": 18939904,
-      "delta_bytes": 409600,
-      "peak_delta_bytes": 245760
+      "initial_bytes": 18612224,
+      "final_bytes": 18628608,
+      "peak_bytes": 18661376,
+      "delta_bytes": 16384,
+      "peak_delta_bytes": 49152
     },
     "memory_comparison": {
-      "original_peak_kb": 960.0,
-      "optimized_peak_kb": 240.0,
-      "reduction_percent": 75.0,
+      "original_peak_kb": 1088.0,
+      "optimized_peak_kb": 48.0,
+      "reduction_percent": 95.58823529411765,
       "target_reduction_percent": 80
     },
     "file_access": {
-      "original_files_accessed": 81,
-      "original_access_time_ms": 0.35666600160766393,
-      "optimized_files_accessed": 3,
-      "optimized_access_time_ms": 0.032790994737297297,
-      "file_reduction_percent": 96.29629629629629,
-      "time_improvement_percent": 90.80624601462078
+      "original_files_accessed": 88,
+      "original_access_time_ms": 0.8020410023164004,
+      "optimized_files_accessed": 2,
+      "optimized_access_time_ms": 0.0926670036278665,
+      "file_reduction_percent": 97.72727272727273,
+      "time_improvement_percent": 88.44610146361197
     }
   },
   "baseline_targets": {
@@ -161,9 +161,9 @@
   "performance_improvements": {
     "startup_time": {
       "baseline_ms": 61100,
-      "achieved_ms": 6.165053999575321,
+      "achieved_ms": 6.5988918009679765,
       "target_ms": 5000,
-      "improvement_from_baseline_percent": 99.98990989525439,
+      "improvement_from_baseline_percent": 99.98919984975292,
       "meets_target": true
     },
     "token_usage": {
@@ -179,15 +179,15 @@
       "meets_target": false
     },
     "memory_usage": {
-      "reduction_percent": 75.0,
+      "reduction_percent": 95.58823529411765,
       "target_reduction_percent": 80,
-      "meets_target": false
+      "meets_target": true
     }
   },
   "summary": {
-    "targets_met": 2,
+    "targets_met": 3,
     "total_targets": 4,
-    "success_rate_percent": 50.0,
+    "success_rate_percent": 75.0,
     "overall_success": false
   }
 }

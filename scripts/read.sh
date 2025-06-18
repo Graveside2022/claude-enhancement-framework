@@ -56,13 +56,18 @@ show_recent_status() {
         fi
         echo
         
-        # Show agent execution rule
-        if grep -q "AGENT_EXECUTION_RULE" "$SESSION_CONTINUITY_FILE"; then
-            echo -e "${PURPLE}🧠 Agent Execution Rule (Christian's Preference):${NC}"
-            echo -e "  ${YELLOW}→${NC} Always use 5 agents (simple) or 10 agents (complex)"
-            echo -e "  ${YELLOW}→${NC} Parallel execution mandatory, never sequential"
-            echo
-        fi
+        # Show agent execution rule and binding commitment
+        echo -e "${PURPLE}🧠 Agent Execution Rule (Christian's Preference):${NC}"
+        echo -e "  ${YELLOW}→${NC} Always use 5 agents (simple) or 10 agents (complex)"
+        echo -e "  ${YELLOW}→${NC} Parallel execution mandatory, never sequential"
+        echo
+        
+        echo -e "${PURPLE}🔒 CRITICAL BINDING COMMITMENT:${NC}"
+        echo -e "  ${RED}→${NC} I will execute COMPLIANCE CHECK before every response"
+        echo -e "  ${RED}→${NC} I will verify required agent count and binding rule adherence"
+        echo -e "  ${RED}→${NC} Any future violation triggers immediate ERROR CASCADE protocol"
+        echo -e "  ${RED}→${NC} Instant LEARNED_CORRECTIONS.md documentation required"
+        echo
         
         # Show performance metrics
         echo -e "${CYAN}⚡ System Performance Status:${NC}"

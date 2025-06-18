@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "generated": "2025-06-18T00:32:00Z",
+  "patterns": {
+    "boot_performance": {
+      "keywords": ["boot", "startup", "performance", "slow", "initialization", "speed", "fast"],
+      "patterns": [
+        "refactoring/boot_sequence_optimization",
+        "architecture/lazy_loading_optimization"
+      ]
+    },
+    "error_debugging": {
+      "keywords": ["error", "bug", "fix", "debugging", "troubleshooting", "issue"],
+      "patterns": [
+        "bug_fixes/systematic_error_resolution",
+        "refactoring/error_learning_deferred_loading"
+      ]
+    },
+    "agent_configuration": {
+      "keywords": ["agent", "agents", "parallel", "configuration", "concurrent", "processing"],
+      "patterns": [
+        "architecture/dual_parallel_agent_configuration"
+      ]
+    },
+    "token_optimization": {
+      "keywords": ["token", "tokens", "memory", "optimization", "usage", "reduce"],
+      "patterns": [
+        "refactoring/token_usage_optimization",
+        "generation/memory_optimization_patterns"
+      ]
+    },
+    "session_management": {
+      "keywords": ["session", "continuity", "memory", "state"],
+      "patterns": [
+        "generation/auto_session_continuity_pattern",
+        "refactoring/error_learning_deferred_loading"
+      ]
+    }
+  }
+}

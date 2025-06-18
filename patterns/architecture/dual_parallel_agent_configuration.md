@@ -1,5 +1,10 @@
 # Dual Parallel Agent Configuration Pattern
 
+**Keywords**: agent, parallel, configuration, agents, multiple, concurrent, processing
+**Tags**: agents, architecture, parallel, configuration, concurrent, processing
+**Complexity**: low
+**Use Cases**: agent setup, parallel processing, agent configuration, concurrent agents
+
 ## Problem Statement
 Claude needs different parallel agent counts for different contexts:
 - **Boot sequences**: 3 agents (faster startup)

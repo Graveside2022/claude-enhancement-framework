@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-17T17:27:57.701603",
+  "timestamp": "2025-06-17T23:50:03.087319",
   "user": "Christian",
   "exact_targets": {
     "token_reduction": {
@@ -11,7 +11,7 @@
     "startup_time": {
       "baseline_ms": 61100,
       "target_ms": 5000,
-      "achieved_ms": 5.0447374014765956
+      "achieved_ms": 5.040995602030307
     },
     "cache_hit_rate": {
       "target_percent": 90,
@@ -32,7 +32,7 @@
     {
       "test_name": "Token Usage Reduction (24,600 \u2192 ~540)",
       "passed": true,
-      "timestamp": "2025-06-17T17:27:57.701634",
+      "timestamp": "2025-06-17T23:50:03.087341",
       "details": {
         "baseline_tokens": 24600,
         "optimized_tokens": 90,
@@ -44,30 +44,30 @@
     {
       "test_name": "Startup Time Improvement (61.1s \u2192 <5s)",
       "passed": true,
-      "timestamp": "2025-06-17T17:27:57.752416",
+      "timestamp": "2025-06-17T23:50:03.137851",
       "details": {
         "baseline_ms": 61100,
         "target_ms": 5000,
-        "achieved_ms": 5.0447374014765956,
-        "improvement_percent": 99.99174347397467,
+        "achieved_ms": 5.040995602030307,
+        "improvement_percent": 99.99174959803268,
         "all_measurements_ms": [
-          5.133208003826439,
-          5.0529169966466725,
-          5.023040997912176,
-          5.0500420038588345,
-          5.075458000646904,
-          5.038917006459087,
-          5.061375006334856,
-          5.051749991253018,
-          5.034540998167358,
-          4.926125009660609
+          5.053750006482005,
+          5.031207998399623,
+          5.029583000577986,
+          5.052874999819323,
+          5.054791006841697,
+          5.040374991949648,
+          5.042208009399474,
+          5.031958004110493,
+          5.02983300248161,
+          5.0433750002412125
         ]
       }
     },
     {
       "test_name": "Cache Hit Rate (>90% target)",
       "passed": false,
-      "timestamp": "2025-06-17T17:27:57.752443",
+      "timestamp": "2025-06-17T23:50:03.137881",
       "details": {
         "total_operations": 15,
         "cache_hits": 10,
@@ -101,7 +101,7 @@
     {
       "test_name": "Functionality Preservation (100%)",
       "passed": true,
-      "timestamp": "2025-06-17T17:27:57.752628",
+      "timestamp": "2025-06-17T23:50:03.138132",
       "details": {
         "total_tests": 6,
         "passed_tests": 6,
@@ -120,7 +120,7 @@
     {
       "test_name": "Memory Usage Reduction (~1MB \u2192 ~200KB)",
       "passed": true,
-      "timestamp": "2025-06-17T17:27:57.752634",
+      "timestamp": "2025-06-17T23:50:03.138139",
       "details": {
         "baseline_kb": 1024,
         "target_kb": 200,

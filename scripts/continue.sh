@@ -52,6 +52,14 @@ restore_context() {
     echo -e "  ${YELLOW}→${NC} Manual backup system active"
     echo
     
+    echo -e "${PURPLE}🔒 CRITICAL BINDING COMMITMENT:${NC}"
+    echo -e "  ${RED}→${NC} I will execute COMPLIANCE CHECK before every response"
+    echo -e "  ${RED}→${NC} I will verify required agent count and binding rule adherence"
+    echo -e "  ${RED}→${NC} Any future violation triggers immediate ERROR CASCADE protocol"
+    echo -e "  ${RED}→${NC} Instant LEARNED_CORRECTIONS.md documentation required"
+    echo -e "  ${YELLOW}→${NC} 5 parallel agents for simple tasks, 10 for complex tasks"
+    echo
+    
     if [[ -f "$SESSION_CONTINUITY_FILE" ]]; then
         echo -e "${CYAN}📊 Recent Major Completions:${NC}"
         grep -E "^## .* COMPLETE ✅" "$SESSION_CONTINUITY_FILE" | tail -5 | while read -r line; do
