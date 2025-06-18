@@ -10,6 +10,7 @@ Author: Christian
 Version: 1.0.0
 """
 
+import argparse
 import os
 import sys
 import time
@@ -197,7 +198,7 @@ def interactive_setup():
     }
 
 
-def setup_framework():
+def setup_framework(args=None):
     """Main setup process."""
     start_time = time.time()
     
@@ -252,7 +253,7 @@ def setup_framework():
     # Deploy global configuration
     if config["deploy_global"]:
         print("\n📂 Deploying global configuration...")
-        global_results = enhancer.deploy_global_configuration()
+        global_results = enhancer.deploy_global_configuration(force=args.force if args else False)
         
         if global_results["success"]:
             print(f"✅ Global deployment successful ({global_results['deployment_time']:.3f}s)")
@@ -268,7 +269,7 @@ def setup_framework():
     # Deploy project configuration
     if config["deploy_project"]:
         print(f"\n📁 Deploying project configuration...")
-        project_results = enhancer.deploy_project_configuration()
+        project_results = enhancer.deploy_project_configuration(force=args.force if args else False)
         
         if project_results["success"]:
             print(f"✅ Project deployment successful ({project_results['deployment_time']:.3f}s)")
@@ -342,8 +343,14 @@ def setup_framework():
 
 
 if __name__ == "__main__":
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Claude Enhancement Framework Setup Script")
+    parser.add_argument("--force", action="store_true", help="Force installation without confirmation prompts")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    args = parser.parse_args(sys.argv[1:])
+    
     try:
-        setup_framework()
+        setup_framework(args)
     except KeyboardInterrupt:
         print("\n\n❌ Setup cancelled by user")
         sys.exit(1)
