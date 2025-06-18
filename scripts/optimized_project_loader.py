@@ -63,11 +63,17 @@ class SmartConfigurationManager:
                 self.project_root / "CLAUDE.md",
                 self.project_root / "package.json",
                 self.project_root / "requirements.txt",
-                self.project_root / "SESSION_CONTINUITY.md"
+                self.project_root / "SESSION_CONTINUITY.md",
+                Path.home() / ".claude" / "LEARNED_CORRECTIONS.md"
             ]
             
             for file_path in key_files:
-                cache_key = str(file_path.relative_to(self.project_root))
+                # Handle global files (like LEARNED_CORRECTIONS.md) differently
+                if str(file_path).startswith(str(Path.home())):
+                    cache_key = file_path.name
+                else:
+                    cache_key = str(file_path.relative_to(self.project_root))
+                    
                 current_fingerprint = self._get_file_fingerprint(file_path)
                 cached_fingerprint = cached_data.get('file_fingerprints', {}).get(cache_key)
                 
@@ -92,6 +98,47 @@ class SmartConfigurationManager:
         except (json.JSONDecodeError, OSError):
             return {}
     
+    def _load_learned_corrections(self) -> Dict:
+        """Load LEARNED_CORRECTIONS.md - CRITICAL for error prevention"""
+        learned_corrections_path = Path.home() / ".claude" / "LEARNED_CORRECTIONS.md"
+        
+        corrections_data = {
+            'exists': False,
+            'last_modified': None,
+            'total_corrections': 0,
+            'recent_corrections': [],
+            'critical_patterns': []
+        }
+        
+        try:
+            if learned_corrections_path.exists():
+                corrections_data['exists'] = True
+                corrections_data['last_modified'] = learned_corrections_path.stat().st_mtime
+                
+                # Read the content for critical patterns
+                with open(learned_corrections_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Extract key correction patterns
+                import re
+                
+                # Count total corrections (## entries)
+                corrections_data['total_corrections'] = len(re.findall(r'^## \d{4}-\d{2}-\d{2}', content, re.MULTILINE))
+                
+                # Extract recent corrections (last 3)
+                correction_sections = re.findall(r'^## (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z.*?)(?=^## |\Z)', content, re.MULTILINE | re.DOTALL)
+                corrections_data['recent_corrections'] = correction_sections[-3:] if correction_sections else []
+                
+                # Extract critical pattern recognition rules
+                pattern_rules = re.findall(r'### Pattern Recognition Rule\n(.*?)(?=\n---|\n###|\Z)', content, re.DOTALL)
+                corrections_data['critical_patterns'] = [rule.strip() for rule in pattern_rules]
+                
+        except Exception as e:
+            # Critical: If we can't load learned corrections, note the error
+            corrections_data['load_error'] = str(e)
+        
+        return corrections_data
+    
     def _perform_minimal_scan(self) -> Dict:
         """Perform ultra-lightweight project scan"""
         config = {
@@ -101,6 +148,7 @@ class SmartConfigurationManager:
             'config_files': [],
             'git_repo': (self.project_root / ".git").exists(),
             'pattern_library': {},
+            'learned_corrections': self._load_learned_corrections(),
             'scan_timestamp': time.time()
         }
         
@@ -141,12 +189,21 @@ class SmartConfigurationManager:
             "SESSION_CONTINUITY.md", "go.mod", "Cargo.toml"
         ]
         
+        # Add global LEARNED_CORRECTIONS.md
+        learned_corrections_path = Path.home() / ".claude" / "LEARNED_CORRECTIONS.md"
+        
         file_fingerprints = {}
         for file_name in key_files:
             file_path = self.project_root / file_name
             fingerprint = self._get_file_fingerprint(file_path)
             if fingerprint:
                 file_fingerprints[file_name] = fingerprint
+        
+        # Add LEARNED_CORRECTIONS.md fingerprint
+        if learned_corrections_path.exists():
+            fingerprint = self._get_file_fingerprint(learned_corrections_path)
+            if fingerprint:
+                file_fingerprints["LEARNED_CORRECTIONS.md"] = fingerprint
         
         cache_data = {
             'config': config,

@@ -22,6 +22,13 @@ from typing import Dict, Optional, Any
 from dataclasses import dataclass, asdict
 import fcntl
 
+# Auto-learning integration
+try:
+    from learning_automation import LearningIntegration
+    LEARNING_ENABLED = True
+except ImportError:
+    LEARNING_ENABLED = False
+
 @dataclass
 class SessionState:
     """Session state data structure"""
@@ -52,6 +59,14 @@ class SessionStateManager:
         # Cache optimization settings
         self.session_timeout_hours = float(os.environ.get('CLAUDE_SESSION_TIMEOUT_HOURS', '8'))  # Extended from 2 to 8 hours
         self.max_session_lifetime_hours = float(os.environ.get('CLAUDE_MAX_SESSION_HOURS', '24'))  # Hard limit: 24 hours
+        
+        # Auto-learning integration
+        self.learning = None
+        if LEARNING_ENABLED:
+            try:
+                self.learning = LearningIntegration(str(self.project_root))
+            except Exception:
+                self.learning = None
         
     def _generate_session_id(self) -> str:
         """Generate unique session ID"""
@@ -204,6 +219,18 @@ class SessionStateManager:
         
         self._save_state()
         print(f"✅ Configuration cached for session {self.state.session_id}")
+        
+        # Auto-learning: Capture configuration loading success
+        if self.learning:
+            try:
+                operation_data = {
+                    'execution_time': time.time() - self.state.initialization_timestamp,
+                    'config_size': len(str(config)),
+                    'success_indicators': ['config_loaded', 'cache_hit']
+                }
+                self.learning.lightweight_pattern_check('config_loading', operation_data)
+            except Exception:
+                pass  # Silent fail
     
     def get_config_value(self, key: str, default: Any = None) -> Any:
         """
@@ -295,14 +322,33 @@ class SessionStateManager:
             except Exception:
                 pass
     
+    def finalize_session_learning(self):
+        """Finalize learning capture for the current session."""
+        if self.learning and self.state:
+            try:
+                session_data = {
+                    'session_id': self.state.session_id,
+                    'duration_hours': (time.time() - self.state.initialization_timestamp) / 3600,
+                    'access_count': self.state.access_count,
+                    'config_loaded': self.state.config_loaded,
+                    'success_indicators': ['session_completed', 'cache_optimized']
+                }
+                self.learning.process_session_end(session_data)
+                print("🧠 Session learning captured")
+            except Exception:
+                pass  # Silent fail
+    
     def _log_side_effect(self, source: str, description: str, impact: str, 
                         files_affected: str, trigger: str):
-        """Log side effect to side_effects_log.md"""
+        """Log side effect to side_effects_log.md with auto-pruning"""
         try:
             side_effects_file = self.project_root / "memory" / "side_effects_log.md"
             
             if not side_effects_file.exists():
                 return
+            
+            # Check file size and prune if needed (keep last 200 entries)
+            self._prune_side_effects_log(side_effects_file)
             
             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             
@@ -323,6 +369,48 @@ class SessionStateManager:
                 
         except Exception as e:
             # Don't fail execution due to logging issues
+            pass
+    
+    def _prune_side_effects_log(self, side_effects_file):
+        """Prune side_effects_log.md to keep last 200 entries"""
+        try:
+            with open(side_effects_file, 'r') as f:
+                lines = f.readlines()
+            
+            # If file is getting large (>400 lines), prune to last 200 entries
+            if len(lines) > 400:
+                # Find the last 200 side effect entries (marked by "### Side Effect")
+                side_effect_indices = []
+                for i, line in enumerate(lines):
+                    if line.startswith("### Side Effect"):
+                        side_effect_indices.append(i)
+                
+                if len(side_effect_indices) > 200:
+                    # Keep header + last 200 entries
+                    template_end = -1
+                    for i, line in enumerate(lines):
+                        if "## Side Effects Template" in line:
+                            # Find end of template section
+                            for j in range(i, len(lines)):
+                                if lines[j].startswith("###") and "Side Effect" in lines[j]:
+                                    template_end = j
+                                    break
+                            break
+                    
+                    if template_end > 0:
+                        # Keep header + template + last 200 entries
+                        header_lines = lines[:template_end]
+                        keep_from_index = side_effect_indices[-200]
+                        pruned_content = header_lines + lines[keep_from_index:]
+                        
+                        # Write pruned content
+                        with open(side_effects_file, 'w') as f:
+                            f.writelines(pruned_content)
+                        
+                        print(f"🧹 Pruned side_effects_log.md: {len(lines)} → {len(pruned_content)} lines")
+                        
+        except Exception as e:
+            # Silent fail - don't disrupt operations
             pass
 
 class SmartConfigurationManager:

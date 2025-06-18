@@ -29,6 +29,20 @@ show_header() {
     echo
 }
 
+# Function to show boot status report
+show_boot_status() {
+    echo -e "${GREEN}🚀 BOOT STATUS REPORT${NC}"
+    echo -e "${WHITE}─────────────────────────────────────────────${NC}"
+    
+    # Run boot status reporter if available
+    if [[ -f "${PROJECT_ROOT}/scripts/boot_status_reporter.py" ]]; then
+        python3 "${PROJECT_ROOT}/scripts/boot_status_reporter.py"
+    else
+        echo -e "${RED}❌ Boot status reporter not found${NC}"
+    fi
+    echo
+}
+
 # Function to show recent status and key information
 show_recent_status() {
     echo -e "${GREEN}🔄 RECENT STATUS & KEY CONTEXT${NC}"
@@ -172,6 +186,9 @@ show_section() {
     local section="$1"
     
     case "$section" in
+        "boot")
+            show_boot_status
+            ;;
         "status"|"recent")
             show_recent_status
             ;;
@@ -182,6 +199,7 @@ show_section() {
             show_quick_context
             ;;
         "all"|"full")
+            show_boot_status
             show_recent_status
             show_system_status
             show_quick_context
@@ -189,6 +207,7 @@ show_section() {
         *)
             echo -e "${RED}❌ Unknown section: $section${NC}"
             echo -e "${YELLOW}Available sections:${NC}"
+            echo "  - boot: Show boot status report"
             echo "  - recent/status: Recent work and key context"
             echo "  - system: System and file status"
             echo "  - quick/context: Quick context for restart"
@@ -203,7 +222,8 @@ main() {
     show_header
     
     if [[ $# -eq 0 ]]; then
-        # Default: show all sections
+        # Default: show boot status first, then other sections
+        show_boot_status
         show_recent_status
         show_system_status
         show_quick_context
@@ -212,7 +232,7 @@ main() {
     fi
     
     echo -e "${WHITE}================================================${NC}"
-    echo -e "${CYAN}💡 Usage: ${NC}./scripts/read.sh [recent|system|quick|all]"
+    echo -e "${CYAN}💡 Usage: ${NC}./scripts/read.sh [boot|recent|system|quick|all]"
     echo -e "${CYAN}💡 Continue: ${NC}./scripts/continue.sh"
     echo -e "${WHITE}================================================${NC}"
 }

@@ -28,6 +28,13 @@ sys.path.append(str(Path(__file__).parent))
 from pattern_matcher import PatternMatcher
 from session_state_manager import SessionStateManager, SmartConfigurationManager
 
+# Auto-learning integration
+try:
+    from learning_automation import LearningIntegration
+    LEARNING_ENABLED = True
+except ImportError:
+    LEARNING_ENABLED = False
+
 @dataclass
 class PatternExecutionResult:
     """Result of pattern execution"""
@@ -532,6 +539,14 @@ class PatternSystemOrchestrator:
         self.session_manager = SessionStateManager(project_root)
         self.config_manager = SmartConfigurationManager(project_root)
         
+        # Auto-learning integration
+        self.learning_integration = None
+        if LEARNING_ENABLED:
+            try:
+                self.learning_integration = LearningIntegration(project_root)
+            except Exception:
+                self.learning_integration = None
+        
         # Performance tracking
         self.operation_metrics = {
             'patterns_matched': 0,
@@ -606,11 +621,25 @@ class PatternSystemOrchestrator:
                 )
                 execution_results.append(exec_result)
                 
-                # Capture learning
+                # Capture learning (existing system)
                 learning = self.learning_capturer.capture_learning(
                     exec_result, problem_description, ""
                 )
                 learning_captures.append(learning)
+                
+                # Auto-learning integration (new system)
+                if self.learning_integration:
+                    try:
+                        operation_data = {
+                            'execution_time': exec_result.execution_time,
+                            'pattern_key': best_pattern['pattern_key'],
+                            'success': exec_result.success,
+                            'errors_encountered': len(exec_result.errors),
+                            'side_effects_count': len(exec_result.side_effects)
+                        }
+                        self.learning_integration.lightweight_pattern_check('pattern_execution', operation_data)
+                    except Exception:
+                        pass  # Silent fail
                 
                 # Update context
                 self.context_engine.update_context(exec_result.context_updates)
