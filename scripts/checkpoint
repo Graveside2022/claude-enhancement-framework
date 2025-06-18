@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Checkpoint Wrapper Script
+# Simplified interface to checkpoint_enhanced.py
+# Usage:
+#   checkpoint "message"                  # Document only
+#   checkpoint save "message"             # Document + git stash
+#   checkpoint commit "message"           # Document + git commit
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHECKPOINT_SCRIPT="$PROJECT_ROOT/scripts/checkpoint_enhanced.py"
+
+# Check if checkpoint_enhanced.py exists
+if [ ! -f "$CHECKPOINT_SCRIPT" ]; then
+    echo "❌ Error: checkpoint_enhanced.py not found at $CHECKPOINT_SCRIPT"
+    exit 1
+fi
+
+# Parse arguments
+if [ $# -eq 0 ]; then
+    # No arguments - default checkpoint
+    python3 "$CHECKPOINT_SCRIPT" "Manual checkpoint"
+elif [ $# -eq 1 ]; then
+    # One argument - message for document-only checkpoint
+    python3 "$CHECKPOINT_SCRIPT" "$1"
+elif [ $# -eq 2 ]; then
+    # Two arguments - mode and message
+    mode="$1"
+    message="$2"
+    
+    case "$mode" in
+        "save")
+            python3 "$CHECKPOINT_SCRIPT" --stash "$message"
+            ;;
+        "commit")
+            python3 "$CHECKPOINT_SCRIPT" --commit "$message"
+            ;;
+        *)
+            echo "❌ Error: Unknown mode '$mode'"
+            echo "Usage:"
+            echo "  checkpoint \"message\"                  # Document only"
+            echo "  checkpoint save \"message\"             # Document + git stash"
+            echo "  checkpoint commit \"message\"           # Document + git commit"
+            exit 1
+            ;;
+    esac
+else
+    echo "❌ Error: Too many arguments"
+    echo "Usage:"
+    echo "  checkpoint \"message\"                  # Document only"
+    echo "  checkpoint save \"message\"             # Document + git stash"
+    echo "  checkpoint commit \"message\"           # Document + git commit"
+    exit 1
+fi
